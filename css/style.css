@@ -1,42 +1,289 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* ── Reset ───────────────────────────────────────────── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     background-color: #0a0a12;
     overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Share Tech Mono', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #c0f0f0;
 }
 
+/* ── 3D viewport — right 70 % of screen ─────────────── */
 #container {
-    width: 100vw;
+    position: fixed;
+    left: 30%;
+    width: 70%;
     height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
+canvas { display: block; }
 
-canvas {
-    display: block;
-}
-
+/* ── Controls hint ──────────────────────────────────── */
 #controls-hint {
     position: fixed;
     bottom: 20px;
-    left: 50%;
+    left: 65%;
     transform: translateX(-50%);
     color: rgba(0, 255, 255, 0.6);
-    font-size: 14px;
+    font-size: 13px;
     text-align: center;
     pointer-events: none;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.8s ease;
+    z-index: 20;
 }
-
 #controls-hint p {
     background: rgba(0, 20, 30, 0.7);
     padding: 10px 20px;
     border-radius: 20px;
     border: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+/* ── SVG connecting-line overlay ────────────────────── */
+#lines-svg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 15;
+}
+
+/* ── Hover bubble ───────────────────────────────────── */
+#hover-bubble {
+    position: fixed;
+    width: 220px;
+    padding: 14px 18px 12px;
+    background: rgba(2, 12, 22, 0.92);
+    border: 1px solid rgba(0, 200, 220, 0.3);
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.22s ease, transform 0.22s ease,
+                border-color 0.2s ease, box-shadow 0.2s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 20;
+}
+#hover-bubble.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    cursor: pointer;
+}
+#hover-bubble:hover {
+    border-color: rgba(0, 220, 240, 0.7);
+    box-shadow: 0 0 20px rgba(0, 220, 240, 0.25),
+                inset 0 0 20px rgba(0, 220, 240, 0.04);
+}
+
+.bubble-indicator {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    vertical-align: middle;
+    box-shadow: 0 0 6px currentColor;
+}
+
+.bubble-label {
+    display: inline;
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(0, 230, 240, 0.95);
+}
+
+.bubble-desc {
+    margin-top: 5px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: rgba(0, 200, 210, 0.5);
+    letter-spacing: 0.5px;
+}
+
+.bubble-hint {
+    margin-top: 8px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: rgba(0, 200, 210, 0.3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* ── Detail overlay ─────────────────────────────────── */
+#detail-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 6, 14, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
+#detail-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#detail-panel {
+    position: relative;
+    width: min(920px, 90vw);
+    max-height: 88vh;
+    background: rgba(4, 14, 24, 0.94);
+    border: 1px solid rgba(0, 200, 220, 0.3);
+    border-radius: 6px;
+    padding: 32px 36px 28px;
+    overflow-y: auto;
+    box-shadow: 0 0 60px rgba(0, 180, 200, 0.12),
+                inset 0 0 40px rgba(0, 180, 200, 0.03);
+}
+
+#detail-close {
+    position: absolute;
+    top: 16px; right: 20px;
+    background: none;
+    border: 1px solid rgba(0, 200, 220, 0.3);
+    color: rgba(0, 220, 240, 0.8);
+    font-size: 22px;
+    width: 36px; height: 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#detail-close:hover {
+    border-color: rgba(0, 220, 240, 0.7);
+    color: #0ff;
+    box-shadow: 0 0 12px rgba(0, 220, 240, 0.3);
+}
+
+/* ── Detail header ──────────────────────────────────── */
+#detail-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 200, 220, 0.15);
+}
+#detail-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: #0ff;
+    margin-bottom: 6px;
+}
+#detail-desc {
+    font-size: 13px;
+    color: rgba(0, 200, 210, 0.55);
+    letter-spacing: 1px;
+}
+
+/* ── Detail body (organ + data side by side) ────────── */
+#detail-body {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 20px;
+}
+
+#organ-container {
+    flex: 0 0 340px;
+    height: 340px;
+    position: relative;
+    border: 1px solid rgba(0, 200, 220, 0.15);
+    border-radius: 4px;
+    background: rgba(0, 8, 16, 0.6);
+    overflow: hidden;
+}
+#organ-canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+#organ-loading,
+#organ-unavailable {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: rgba(0, 200, 210, 0.4);
+}
+#organ-unavailable { color: rgba(168, 162, 158, 0.5); }
+
+.dot-anim { animation: dots 1.4s steps(4, end) infinite; }
+@keyframes dots {
+    0%  { opacity: 0; }
+    25% { opacity: 1; }
+    75% { opacity: 1; }
+}
+
+/* ── Data container ─────────────────────────────────── */
+#data-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 200, 220, 0.08);
+}
+.data-row:last-child { border-bottom: none; }
+
+.data-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: rgba(0, 200, 210, 0.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.data-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+.data-unit {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: rgba(0, 200, 210, 0.4);
+    margin-left: 4px;
+}
+
+.status-optimal   { color: #14B8A6; }
+.status-normal    { color: #A8A29E; }
+.status-attention { color: #F59E0B; }
+
+/* ── Detail summary ─────────────────────────────────── */
+#detail-summary {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: rgba(0, 200, 210, 0.45);
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 200, 220, 0.1);
+}
+
+/* ── Utilities ──────────────────────────────────────── */
+.hidden { opacity: 0; pointer-events: none; }
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 900px) {
+    #container       { left: 0; width: 100%; }
+    #controls-hint   { left: 50%; }
+    #detail-body     { flex-direction: column; }
+    #organ-container { flex: none; width: 100%; height: 260px; }
 }
