@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { ChevronDown, ChevronUp, ChevronRight, AlertTriangle, Check } from 'lucide-react';
+import { ChevronDown, ChevronUp, ChevronRight, AlertTriangle } from 'lucide-react';
 import FanChart from '../components/sandbox/FanChart';
 import BodyMap from '../components/sandbox/BodyMap';
 import PaceGauge from '../components/dashboard/PaceGauge';
