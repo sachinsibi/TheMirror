@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+mirror-app/node_modules/
+
+# Build outputs
+dist/
+mirror-app/dist/
+
+# Vite cache
+.vite/
+mirror-app/.vite/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+
+# TypeScript build info
+*.tsbuildinfo
+mirror-app/tsconfig.tsbuildinfo
