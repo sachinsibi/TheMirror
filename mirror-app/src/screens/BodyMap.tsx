@@ -80,8 +80,8 @@ export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenP
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
         padding: '10px 16px', borderRadius: 8,
-        background: 'rgba(245,158,11,0.06)',
-        border: '1px solid rgba(245,158,11,0.15)',
+        background: 'var(--color-bg-surface)',
+        border: '1px solid #B45309',
       }}>
         <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Current pace</span>
         <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 14, color: '#F59E0B', fontWeight: 600 }}>
@@ -108,7 +108,14 @@ export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenP
           <p style={{ margin: '0 0 16px', fontSize: 12, color: 'var(--color-text-tertiary)', alignSelf: 'flex-start' }}>
             Tap a zone to explore
           </p>
-          <BodyMapViz organScores={organScores} />
+          <BodyMapViz
+            organScores={organScores}
+            selectedZoneId={selectedOrgan?.id}
+            onZoneClick={(zoneId) => {
+              const organ = ORGAN_DETAILS.find(o => o.id === zoneId) ?? null;
+              setSelectedOrgan(organ);
+            }}
+          />
           {/* Zone tap buttons below map */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%', marginTop: 16 }}>
             {ORGAN_DETAILS.map(organ => (

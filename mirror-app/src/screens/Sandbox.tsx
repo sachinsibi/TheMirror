@@ -224,8 +224,8 @@ export default function Sandbox({ preloadedInterventionId }: SandboxProps) {
           {/* Disease-risk card */}
           <Card style={{
             padding: '16px 18px',
-            background: riskContent.isPositive ? 'rgba(20,184,166,0.05)' : 'rgba(245,158,11,0.05)',
-            border: riskContent.isPositive ? '1px solid rgba(20,184,166,0.15)' : '1px solid rgba(245,158,11,0.15)',
+            background: 'var(--color-bg-surface)',
+            border: riskContent.isPositive ? '1px solid #0D9488' : '1px solid #B45309',
           }}>
             <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
               <AlertTriangle

@@ -5,6 +5,8 @@ type OrganScores = typeof ORGAN_SCORES.current;
 
 interface BodyMapProps {
   organScores: OrganScores;
+  onZoneClick?: (zoneId: string) => void;
+  selectedZoneId?: string;
 }
 
 interface ZoneConfig {
@@ -67,7 +69,7 @@ function hexToRgb(hex: string) {
   } : null;
 }
 
-export default function BodyMap({ organScores }: BodyMapProps) {
+export default function BodyMap({ organScores, onZoneClick, selectedZoneId }: BodyMapProps) {
   const [displayColors, setDisplayColors] = useState<Record<string, string>>(() => {
     const colors: Record<string, string> = {};
     ZONES.forEach(z => { colors[z.id] = organScores[z.id].color; });
@@ -167,16 +169,30 @@ export default function BodyMap({ organScores }: BodyMapProps) {
         />
 
         {/* Organ zone overlays */}
-        {ZONES.map((zone, idx) => (
-          <g key={zone.id}>
-            <path
-              d={zone.d}
-              fill={displayColors[zone.id] ?? '#A8A29E'}
-              opacity={zoneOpacity(idx)}
-              style={{ transition: 'fill 50ms' }}
-            />
-          </g>
-        ))}
+        {ZONES.map((zone, idx) => {
+          const isSelected = selectedZoneId === zone.id;
+          return (
+            <g key={zone.id}>
+              {/* Larger invisible hit area for easier clicking */}
+              <path
+                d={zone.d}
+                fill="transparent"
+                stroke="none"
+                strokeWidth={12}
+                style={{ cursor: onZoneClick ? 'pointer' : 'default' }}
+                onClick={() => onZoneClick?.(zone.id)}
+              />
+              <path
+                d={zone.d}
+                fill={displayColors[zone.id] ?? '#A8A29E'}
+                opacity={isSelected ? 0.75 : zoneOpacity(idx)}
+                stroke={isSelected ? (displayColors[zone.id] ?? '#A8A29E') : 'none'}
+                strokeWidth={isSelected ? 1.5 : 0}
+                style={{ transition: 'fill 50ms, opacity 150ms', cursor: onZoneClick ? 'pointer' : 'default', pointerEvents: 'none' }}
+              />
+            </g>
+          );
+        })}
 
         {/* Zone labels (sidebar style) */}
         {ZONES.map(zone => (

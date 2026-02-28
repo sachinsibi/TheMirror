@@ -98,7 +98,7 @@ export default function Dashboard({ onNavigateToProfile, onNavigateToScoreboard,
                 Today is working <span style={{ color: '#F59E0B' }}>against</span> you
               </div>
             </div>
-            <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(245,158,11,0.06)', borderRadius: 6, fontSize: 12, color: 'var(--color-text-secondary)', borderLeft: '2px solid rgba(245,158,11,0.4)' }}>
+            <div style={{ marginTop: 10, padding: '8px 12px', background: 'var(--color-bg-surface)', borderRadius: 6, fontSize: 12, color: 'var(--color-text-secondary)', borderLeft: '2px solid #B45309' }}>
               Late dinner is the main factor today.
             </div>
           </Card>
@@ -147,7 +147,7 @@ export default function Dashboard({ onNavigateToProfile, onNavigateToScoreboard,
 
       {/* Quest strip */}
       {!questDismissed && (
-        <Card style={{ padding: '14px 20px', background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.2)' }}>
+        <Card style={{ padding: '14px 20px', background: 'var(--color-bg-surface)', border: '1.5px solid #6D28D9' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <Star size={16} color="#8B5CF6" />
@@ -160,7 +160,7 @@ export default function Dashboard({ onNavigateToProfile, onNavigateToScoreboard,
               </div>
               {/* Progress dots */}
               <div style={{ display: 'flex', gap: 4 }}>
-                {[1,2,3,4,5].map(d => (
+                {[1, 2, 3, 4, 5].map(d => (
                   <div key={d} style={{ width: 8, height: 8, borderRadius: '50%', background: d <= 3 ? '#8B5CF6' : 'rgba(139,92,246,0.2)' }} />
                 ))}
               </div>
@@ -208,7 +208,7 @@ export default function Dashboard({ onNavigateToProfile, onNavigateToScoreboard,
       </div>
 
       {/* Post-test nudge */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 8, background: 'rgba(20,184,166,0.06)', border: '1px solid rgba(20,184,166,0.15)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 8, background: 'var(--color-bg-surface)', border: '1px solid #0D9488' }}>
         <TrendingDown size={16} color="#14B8A6" />
         <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>
           Your projection is ready to verify. See how accurate we were.
