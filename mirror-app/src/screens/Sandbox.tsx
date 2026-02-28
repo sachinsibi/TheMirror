@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ChevronDown, ChevronUp, AlertTriangle, Check } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { ChevronDown, ChevronUp, ChevronRight, AlertTriangle, Check } from 'lucide-react';
 import FanChart from '../components/sandbox/FanChart';
 import BodyMap from '../components/sandbox/BodyMap';
 import PaceGauge from '../components/dashboard/PaceGauge';
@@ -85,6 +85,14 @@ function getRiskContent(selectedIds: string[], selected: Intervention[]) {
 const GRADE_ORDER = ['STRONG RCT', 'MODERATE RCT', 'PRELIMINARY'];
 
 export default function Sandbox({ preloadedInterventionId }: SandboxProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
+
   const initialIds =
     preloadedInterventionId && preloadedInterventionId !== 'current'
       ? [preloadedInterventionId]
@@ -137,76 +145,144 @@ export default function Sandbox({ preloadedInterventionId }: SandboxProps) {
         </p>
       </div>
 
-      {/* Intervention selector */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {/* Baseline reset pill */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button
-            onClick={() => setSelectedIds([])}
+      {/* Intervention filters */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          <style>{`.no-scrollbar::-webkit-scrollbar { display: none; }`}</style>
+          <div
+            ref={scrollRef}
+            className="no-scrollbar"
             style={{
-              padding: '7px 16px',
-              borderRadius: 20,
-              border: !hasSelections ? '1.5px solid rgba(148,163,184,0.4)' : '1px solid rgba(255,255,255,0.06)',
-              background: !hasSelections ? 'rgba(148,163,184,0.1)' : 'var(--color-bg-surface)',
-              color: !hasSelections ? 'var(--color-text-secondary)' : 'var(--color-text-tertiary)',
-              fontSize: 12, fontWeight: 500,
-              cursor: 'pointer', fontFamily: 'inherit',
-              transition: 'all 150ms ease',
+              display: 'flex',
+              gap: '12px',
+              alignItems: 'center',
+              overflowX: 'auto',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              paddingRight: 40,
             }}
           >
-            Current habits (baseline)
-          </button>
-          {hasSelections && (
-            <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>
-              {selectedInterventions.length} habit{selectedInterventions.length > 1 ? 's' : ''} selected
-              · combined pace{' '}
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#14B8A6' }}>
-                {combinedPace.toFixed(2)}×
-              </span>
-            </span>
-          )}
-        </div>
+            {/* Baseline Reset Pill */}
+            <button
+              onClick={() => setSelectedIds([])}
+              style={{
+                padding: '8px 16px',
+                borderRadius: 8,
+                border: !hasSelections ? '1.5px solid #14B8A6' : '1.5px solid transparent',
+                background: !hasSelections ? '#14B8A6' : 'rgba(255,255,255,0.06)',
+                color: !hasSelections ? '#000000' : 'var(--color-text-secondary)',
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'all 150ms ease',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}
+            >
+              Baseline
+            </button>
 
-        {/* 3-column intervention grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
-          {interventionOptions.map(intervention => {
-            const isSelected = selectedIds.includes(intervention.id);
-            return (
-              <button
-                key={intervention.id}
-                onClick={() => toggleId(intervention.id)}
-                style={{
-                  padding: '12px 14px',
-                  borderRadius: 10,
-                  border: isSelected ? '1.5px solid var(--color-violet)' : '1px solid rgba(255,255,255,0.06)',
-                  background: isSelected ? 'rgba(139,92,246,0.1)' : 'var(--color-bg-surface)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  fontFamily: 'inherit',
-                  transition: 'border-color 150ms ease, background 150ms ease',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 4,
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: isSelected ? 'var(--color-text-primary)' : 'var(--color-text-secondary)' }}>
-                    {intervention.name}
-                  </span>
-                  {isSelected && (
-                    <span style={{ width: 16, height: 16, borderRadius: '50%', background: 'var(--color-violet)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <Check size={10} color="#fff" />
+            {/* Separator */}
+            <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+
+            {/* Intervention Pills */}
+            {interventionOptions.map(intervention => {
+              const isSelected = selectedIds.includes(intervention.id);
+              return (
+                <button
+                  key={intervention.id}
+                  onClick={() => toggleId(intervention.id)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: 8,
+                    border: isSelected ? '1.5px solid #14B8A6' : '1.5px solid transparent',
+                    background: isSelected ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.06)',
+                    color: isSelected ? '#FFFFFF' : 'var(--color-text-secondary)',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    transition: 'all 150ms ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
+                  }}
+                >
+                  <span>{intervention.name}</span>
+                  {intervention.delta && (
+                    <span style={{
+                      fontSize: 11,
+                      color: isSelected ? '#14B8A6' : 'var(--color-text-tertiary)',
+                      fontWeight: 400
+                    }}>
+                      {intervention.delta}
                     </span>
                   )}
-                </div>
-                <span style={{ fontSize: 11, color: isSelected ? '#14B8A6' : 'var(--color-text-tertiary)', fontWeight: 500 }}>
-                  {intervention.delta ?? 'baseline'}
-                </span>
-              </button>
-            );
-          })}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Right Scroll Arrow */}
+          <div style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: 80,
+            background: 'linear-gradient(to right, transparent, rgba(3, 7, 18, 0.8) 60%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            pointerEvents: 'none',
+          }}>
+            <button
+              onClick={scrollRight}
+              style={{
+                pointerEvents: 'auto',
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '50%',
+                width: 32,
+                height: 32,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: 'var(--color-text-secondary)',
+                transition: 'all 150ms ease',
+                backdropFilter: 'blur(4px)',
+                flexShrink: 0,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                e.currentTarget.style.color = 'var(--color-text-primary)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                e.currentTarget.style.color = 'var(--color-text-secondary)';
+              }}
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
+
+        {hasSelections && (
+          <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>
+            {selectedInterventions.length} habit{selectedInterventions.length > 1 ? 's' : ''} selected
+            · combined pace{' '}
+            <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#14B8A6' }}>
+              {combinedPace.toFixed(2)}×
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Main two-column layout */}
@@ -224,7 +300,7 @@ export default function Sandbox({ preloadedInterventionId }: SandboxProps) {
           {/* Disease-risk card */}
           <Card style={{
             padding: '16px 18px',
-            background: 'var(--color-bg-surface)',
+            background: 'rgba(255, 255, 255, 0.06)',
             border: riskContent.isPositive ? '1px solid #0D9488' : '1px solid #B45309',
           }}>
             <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>

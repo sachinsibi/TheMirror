@@ -49,7 +49,7 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
           />
           <div>
             <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', letterSpacing: '-0.01em' }}>
-              Metabolic Mirror
+              The Mirror
             </div>
             <div style={{ fontSize: 10, color: 'var(--color-text-tertiary)', marginTop: 1 }}>
               Advance Health 2026

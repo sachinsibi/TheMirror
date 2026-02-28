@@ -92,7 +92,7 @@ export default function DataSourcePills({ onNavigateToProfile }: DataSourcePills
             gap: 8,
             padding: '7px 14px',
             borderRadius: 20,
-            background: 'var(--color-bg-surface)',
+            background: 'rgba(255, 255, 255, 0.06)',
             border: '1px solid #1A1B25',
             cursor: 'pointer',
             color: 'var(--color-text-secondary)',

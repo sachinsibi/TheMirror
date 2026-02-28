@@ -155,15 +155,15 @@ export default function Scoreboard({ onNavigateToSandbox }: ScoreboardProps) {
                 alignItems: 'center',
                 gap: 14,
                 padding: '14px 18px',
-                background: 'var(--color-bg-surface)',
+                background: 'rgba(255, 255, 255, 0.06)',
                 borderRadius: 10,
                 border: '1px solid rgba(255,255,255,0.06)',
                 cursor: 'pointer',
                 transition: 'background 150ms ease',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
               }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#161720'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--color-bg-surface)'; }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255, 255, 255, 0.1)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255, 255, 255, 0.06)'; }}
             >
               {/* Rank */}
               <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)', width: 16, textAlign: 'center', flexShrink: 0 }}>

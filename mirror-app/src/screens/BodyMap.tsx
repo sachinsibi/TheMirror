@@ -80,7 +80,7 @@ export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenP
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
         padding: '10px 16px', borderRadius: 8,
-        background: 'var(--color-bg-surface)',
+        background: 'rgba(255, 255, 255, 0.06)',
         border: '1px solid #B45309',
       }}>
         <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Current pace</span>

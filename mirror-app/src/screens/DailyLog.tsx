@@ -100,7 +100,7 @@ function Section({
     <div style={{
       borderRadius: 12,
       border: '1px solid rgba(255,255,255,0.06)',
-      background: 'var(--color-bg-surface)',
+      background: 'rgba(255, 255, 255, 0.06)',
       overflow: 'hidden',
     }}>
       {/* Header */}
@@ -271,7 +271,7 @@ export default function DailyLog({ onNavigateToScoreboard }: DailyLogProps) {
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10,
         padding: '10px 16px', borderRadius: 10,
-        background: 'var(--color-bg-surface)',
+        background: 'rgba(255, 255, 255, 0.06)',
         border: '1px solid rgba(255,255,255,0.06)',
       }}>
         <div style={{ flex: 1, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
