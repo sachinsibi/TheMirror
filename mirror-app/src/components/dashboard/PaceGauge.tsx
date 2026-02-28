@@ -95,7 +95,7 @@ export default function PaceGauge({
   const bgArcPath = `M ${arcStart.x} ${arcStart.y} A ${R} ${R} 0 0 1 ${arcEnd.x} ${arcEnd.y}`;
 
   // Needle
-  const needleAngle = Math.PI - paceToRad(displayPace); // converts pace back to SVG angle
+  const needleAngle = paceToRad(displayPace);
   const needleLen = R - strokeW / 2;
   const needleX = cx + needleLen * Math.cos(needleAngle);
   const needleY = cy - needleLen * Math.sin(needleAngle);
@@ -198,7 +198,7 @@ export default function PaceGauge({
       {/* Pace number */}
       <div
         style={{
-          marginTop: isMini ? -16 : -28,
+          marginTop: isMini ? 4 : 16,
           fontFamily: 'JetBrains Mono, monospace',
           fontSize: isMini ? 28 : 56,
           fontWeight: 600,

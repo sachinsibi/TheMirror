@@ -55,7 +55,7 @@ export default function Profile() {
   ];
 
   return (
-    <div style={{ maxWidth: 780, display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
       {/* Page header */}
       <div>

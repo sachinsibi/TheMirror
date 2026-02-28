@@ -51,7 +51,7 @@ export default function Scoreboard({ onNavigateToSandbox }: ScoreboardProps) {
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 780 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
       {/* Page header */}
       <div style={{ marginBottom: 4 }}>

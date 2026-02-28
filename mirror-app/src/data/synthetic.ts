@@ -82,6 +82,24 @@ export const ORGAN_SCORES = {
     immune: { pace: 1.05, color: '#A8A29E' },
     hepatic: { pace: 0.95, color: '#14B8A6' },
   },
+  sleepConsistency: {
+    metabolic: { pace: 1.16, color: '#D4A96A' },
+    cardiovascular: { pace: 1.03, color: '#A8A29E' },
+    immune: { pace: 1.06, color: '#A8A29E' },
+    hepatic: { pace: 0.96, color: '#14B8A6' },
+  },
+  zone2Cardio: {
+    metabolic: { pace: 1.10, color: '#D4A96A' },
+    cardiovascular: { pace: 0.97, color: '#14B8A6' },
+    immune: { pace: 1.06, color: '#A8A29E' },
+    hepatic: { pace: 0.95, color: '#14B8A6' },
+  },
+  timeRestrictedEating: {
+    metabolic: { pace: 1.14, color: '#D4A96A' },
+    cardiovascular: { pace: 1.06, color: '#A8A29E' },
+    immune: { pace: 1.11, color: '#D4A96A' },
+    hepatic: { pace: 0.98, color: '#14B8A6' },
+  },
   combined: {
     metabolic: { pace: 0.98, color: '#14B8A6' },
     cardiovascular: { pace: 0.96, color: '#14B8A6' },
@@ -104,6 +122,7 @@ export const INTERVENTIONS = [
     name: 'Post-meal walks',
     delta: '↓ up to 1.3 yr',
     pace: 1.04,
+    chartPace: 0.47, // produces -1.3yr at 24mo: (59.44-1.3-57.2)/2
     paceRange: { low: 1.01, high: 1.07 },
     organScores: ORGAN_SCORES.postMealWalks,
     evidence: {
@@ -120,6 +139,7 @@ export const INTERVENTIONS = [
     name: 'Dietary changes',
     delta: '↓ up to 0.9 yr',
     pace: 1.07,
+    chartPace: 0.67, // produces -0.9yr at 24mo
     paceRange: { low: 1.03, high: 1.11 },
     organScores: ORGAN_SCORES.dietaryChanges,
     evidence: {
@@ -129,6 +149,57 @@ export const INTERVENTIONS = [
       population: 'Adults 40–65, BMI 25–35',
       summary: 'Caloric restriction with Mediterranean diet pattern reduced biological age by 2.3 years over 12 months.',
       ci: '95% CI: 1.1–3.5 year reduction',
+    },
+  },
+  {
+    id: 'sleep-consistency',
+    name: 'Sleep consistency',
+    delta: '↓ up to 0.9 yr',
+    pace: 1.06,
+    chartPace: 0.67, // produces -0.9yr at 24mo
+    paceRange: { low: 1.03, high: 1.09 },
+    organScores: ORGAN_SCORES.sleepConsistency,
+    evidence: {
+      grade: 'STRONG RCT',
+      study: 'Carroll et al. (2023) – Nature Aging',
+      sampleSize: '1,204 participants',
+      population: 'Adults 40–65 with variable sleep schedules',
+      summary: 'Regularising sleep to a consistent 7–8h window reduced DunedinPACE by 0.05 points and inflammatory markers by 22%.',
+      ci: '95% CI: 0.03–0.07 pace reduction',
+    },
+  },
+  {
+    id: 'zone2-cardio',
+    name: 'Zone 2 cardio',
+    delta: '↓ up to 0.6 yr',
+    pace: 1.07,
+    chartPace: 0.82, // produces -0.6yr at 24mo
+    paceRange: { low: 1.03, high: 1.10 },
+    organScores: ORGAN_SCORES.zone2Cardio,
+    evidence: {
+      grade: 'MODERATE RCT',
+      study: 'Lavie et al. (2022) – JAMA Cardiology',
+      sampleSize: '892 participants',
+      population: 'Adults 45–70, sedentary baseline',
+      summary: '150 min/week of low-intensity aerobic exercise reduced cardiovascular biological age by 1.2 years and lowered resting DunedinPACE.',
+      ci: '95% CI: 0.6–1.8 year cardiovascular age reduction',
+    },
+  },
+  {
+    id: 'time-restricted-eating',
+    name: 'Time-restricted eating',
+    delta: '↓ up to 0.4 yr',
+    pace: 1.09,
+    chartPace: 0.92, // produces -0.4yr at 24mo
+    paceRange: { low: 1.06, high: 1.12 },
+    organScores: ORGAN_SCORES.timeRestrictedEating,
+    evidence: {
+      grade: 'PRELIMINARY',
+      study: 'Sutton et al. (2023) – Cell',
+      sampleSize: '411 participants',
+      population: 'Adults 40–60, metabolic syndrome',
+      summary: 'Eating within an 8-hour window improved insulin sensitivity and showed preliminary effects on epigenetic aging rate at 90 days.',
+      ci: '95% CI: 0.1–0.6 yr reduction (preliminary)',
     },
   },
 ];

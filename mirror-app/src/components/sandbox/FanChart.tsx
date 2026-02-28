@@ -4,7 +4,6 @@ import { USER } from '../../data/synthetic';
 
 interface FanChartProps {
   interventionPace: number | null;
-  selectedId: string;
 }
 
 const W = 580;
@@ -49,7 +48,7 @@ function buildLinePath(points: FanChartPoint[], key: keyof FanChartPoint, minAge
   }).join(' ');
 }
 
-export default function FanChart({ interventionPace, selectedId }: FanChartProps) {
+export default function FanChart({ interventionPace }: FanChartProps) {
   const currentPath = getCurrentPath(USER.biologicalAge);
   const interventionPath = interventionPace !== null
     ? getInterventionPath(USER.biologicalAge, interventionPace)
@@ -59,7 +58,7 @@ export default function FanChart({ interventionPace, selectedId }: FanChartProps
   const [interventionOpacity, setInterventionOpacity] = useState(0);
 
   useEffect(() => {
-    if (interventionPath && selectedId !== 'current') {
+    if (interventionPath) {
       const t1 = setTimeout(() => setShowIntervention(true), 150);
       const t2 = setTimeout(() => setInterventionOpacity(1), 200);
       return () => { clearTimeout(t1); clearTimeout(t2); };
@@ -68,7 +67,7 @@ export default function FanChart({ interventionPace, selectedId }: FanChartProps
       const t = setTimeout(() => setShowIntervention(false), 400);
       return () => clearTimeout(t);
     }
-  }, [selectedId, interventionPace]);
+  }, [interventionPace]);
 
   // Compute y scale range
   const allAges = currentPath.flatMap(p => [p.band90Low, p.band90High]);
