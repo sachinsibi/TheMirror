@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import BodyMapViz from '../components/sandbox/BodyMap';
 import Card from '../components/ui/Card';
-import { ORGAN_SCORES, USER } from '../data/synthetic';
+import { USER } from '../data/synthetic';
 
 interface OrganDetail {
   id: string;
@@ -17,14 +17,14 @@ interface OrganDetail {
 
 const ORGAN_DETAILS: OrganDetail[] = [
   {
-    id: 'metabolic',
-    name: 'Metabolic',
-    age: 60.1,
-    pace: 1.28,
+    id: 'neurological',
+    name: 'Neurological',
+    age: 56.4,
+    pace: 1.14,
     trend: 'worsening',
-    topFactor: 'Post-meal glucose spikes (avg +47 mg/dL)',
-    dataSource: 'Derived from glucose variability + CGM meal response curves',
-    color: '#F59E0B',
+    topFactor: 'Deep sleep declining — avg 1.4h (target 1.8h+)',
+    dataSource: 'Brain · Wearable (sleep architecture: deep sleep, REM)',
+    color: '#4ae616',
   },
   {
     id: 'cardiovascular',
@@ -33,8 +33,28 @@ const ORGAN_DETAILS: OrganDetail[] = [
     pace: 1.08,
     trend: 'stable',
     topFactor: 'Resting HRV declining 3% week-over-week',
-    dataSource: 'Derived from HRV, resting HR, sleep quality (Oura)',
-    color: '#D4A96A',
+    dataSource: 'Heart · Wearable (HRV, resting HR)',
+    color: '#4ae616',
+  },
+  {
+    id: 'metabolic',
+    name: 'Metabolic',
+    age: 60.1,
+    pace: 1.28,
+    trend: 'worsening',
+    topFactor: 'Post-meal glucose spikes (avg +47 mg/dL)',
+    dataSource: 'Pancreas · CGM (glucose variability, postprandial response)',
+    color: '#f5700b',
+  },
+  {
+    id: 'endocrine',
+    name: 'Endocrine',
+    age: 57.0,
+    pace: 1.10,
+    trend: 'stable',
+    topFactor: 'Circadian temperature rhythm irregular — late light exposure',
+    dataSource: 'Thyroid · Wearable (temperature trends, HRV circadian) + CGM',
+    color: '#eaea08',
   },
   {
     id: 'immune',
@@ -43,18 +63,8 @@ const ORGAN_DETAILS: OrganDetail[] = [
     pace: 1.18,
     trend: 'improving',
     topFactor: 'Inflammatory load elevated by late dinners',
-    dataSource: 'Derived from sleep consistency + diet quality index',
-    color: '#C9956F',
-  },
-  {
-    id: 'hepatic',
-    name: 'Hepatic',
-    age: 54.9,
-    pace: 0.97,
-    trend: 'improving',
-    topFactor: 'Alcohol intake within range · diet improving',
-    dataSource: 'Derived from dietary pattern + epigenetic hepatic clock',
-    color: '#14B8A6',
+    dataSource: 'Spleen · Epigenetic (immunosenescence, inflammatory markers)',
+    color: '#eaea08',
   },
 ];
 
@@ -71,10 +81,8 @@ interface BodyMapScreenProps {
 export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenProps) {
   const [selectedOrgan, setSelectedOrgan] = useState<OrganDetail | null>(null);
 
-  const organScores = ORGAN_SCORES.current;
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, height: '100%' }}>
 
       {/* Persistent verdict banner */}
       <div style={{
@@ -101,49 +109,28 @@ export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenP
         </p>
       </div>
 
-      <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flex: 1, minHeight: 0 }}>
 
-        {/* Left — body silhouette */}
-        <Card style={{ flex: '0 0 280px', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <p style={{ margin: '0 0 16px', fontSize: 12, color: 'var(--color-text-tertiary)', alignSelf: 'flex-start' }}>
-            Tap a zone to explore
-          </p>
+        {/* Left — 3D point-cloud body */}
+        <Card style={{ flex: '1 1 55%', padding: 0, overflow: 'hidden', minHeight: 520, position: 'relative' }}>
+          <div style={{
+            position: 'absolute', top: 16, left: 20, zIndex: 5,
+            fontSize: 10, color: 'rgba(0,200,210,0.4)',
+            fontFamily: 'JetBrains Mono, monospace',
+            letterSpacing: '1px', textTransform: 'uppercase',
+          }}>
+            Drag to rotate · Hover body to explore
+          </div>
           <BodyMapViz
-            organScores={organScores}
-            selectedZoneId={selectedOrgan?.id}
             onZoneClick={(zoneId) => {
               const organ = ORGAN_DETAILS.find(o => o.id === zoneId) ?? null;
               setSelectedOrgan(organ);
             }}
           />
-          {/* Zone tap buttons below map */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%', marginTop: 16 }}>
-            {ORGAN_DETAILS.map(organ => (
-              <button
-                key={organ.id}
-                onClick={() => setSelectedOrgan(organ)}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '8px 12px', borderRadius: 8,
-                  background: selectedOrgan?.id === organ.id ? 'rgba(255,255,255,0.05)' : 'transparent',
-                  border: selectedOrgan?.id === organ.id ? `1px solid ${organ.color}30` : '1px solid transparent',
-                  cursor: 'pointer', fontFamily: 'inherit',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: organ.color, display: 'inline-block', flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, color: 'var(--color-text-secondary)' }}>{organ.name}</span>
-                </div>
-                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: organ.color }}>
-                  ~{organ.age} yr
-                </span>
-              </button>
-            ))}
-          </div>
         </Card>
 
         {/* Right — detail panel + organ list */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ flex: '0 0 340px', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           {/* Organ detail card */}
           {selectedOrgan ? (
@@ -200,9 +187,9 @@ export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenP
               </button>
             </Card>
           ) : (
-            <Card style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200 }}>
+            <Card style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 160 }}>
               <p style={{ color: 'var(--color-text-tertiary)', fontSize: 14, margin: 0, textAlign: 'center' }}>
-                Select an organ zone to see detailed aging data, top contributing factors, and linked habits.
+                Hover over a region on the body, then click to see detailed aging data.
               </p>
             </Card>
           )}
@@ -214,7 +201,7 @@ export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenP
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {/* Header */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 100px', gap: 12, padding: '0 4px 10px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 70px 60px 90px', gap: 8, padding: '0 4px 10px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 {['System', 'Bio Age', 'Pace', 'Trend'].map(h => (
                   <span key={h} style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 600 }}>{h}</span>
                 ))}
@@ -224,8 +211,8 @@ export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenP
                   key={organ.id}
                   onClick={() => setSelectedOrgan(organ)}
                   style={{
-                    display: 'grid', gridTemplateColumns: '1fr 80px 80px 100px', gap: 12,
-                    padding: '12px 4px',
+                    display: 'grid', gridTemplateColumns: '1fr 70px 60px 90px', gap: 8,
+                    padding: '10px 4px',
                     borderBottom: i < ORGAN_DETAILS.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
                     cursor: 'pointer',
                     borderRadius: 6,
@@ -233,7 +220,7 @@ export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenP
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: organ.color, flexShrink: 0 }} />
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: organ.color, flexShrink: 0, boxShadow: `0 0 6px ${organ.color}` }} />
                     <span style={{ fontSize: 13, color: 'var(--color-text-primary)' }}>{organ.name}</span>
                   </div>
                   <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: organ.color }}>~{organ.age}</span>

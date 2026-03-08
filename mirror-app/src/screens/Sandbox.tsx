@@ -42,7 +42,7 @@ function computeCombinedChartPace(selected: Intervention[]): number {
 // Best (lowest) organ pace across all selected interventions
 function computeCombinedOrgans(selected: Intervention[]) {
   if (selected.length === 0) return INTERVENTIONS[0].organScores;
-  const organs = ['metabolic', 'cardiovascular', 'immune', 'hepatic'] as const;
+  const organs = ['neurological', 'cardiovascular', 'metabolic', 'endocrine', 'immune'] as const;
   const result = {} as typeof INTERVENTIONS[0]['organScores'];
   for (const organ of organs) {
     let best = selected[0].organScores[organ];
@@ -333,7 +333,7 @@ export default function Sandbox({ preloadedInterventionId }: SandboxProps) {
             <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 12, alignSelf: 'flex-start' }}>
               Organ Aging Map
             </div>
-            <BodyMap organScores={displayOrgans} />
+            <BodyMap />
           </Card>
 
           {/* Mini pace gauge */}

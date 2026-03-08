@@ -50,10 +50,11 @@ export const DATA_SOURCES = {
     biologicalAge: 57.2,
     dunedinPace: 1.12,
     organAges: {
-      metabolic: 60.1,
+      neurological: 56.4,
       cardiovascular: 55.8,
+      metabolic: 60.1,
+      endocrine: 57.0,
       immune: 58.3,
-      hepatic: 54.9,
     },
     history: [
       { date: '2025-07-10', biologicalAge: 58.4, pace: 1.19 },
@@ -65,46 +66,53 @@ export const DATA_SOURCES = {
 
 export const ORGAN_SCORES = {
   current: {
-    metabolic: { pace: 1.28, color: '#F59E0B' },    // accelerating
-    cardiovascular: { pace: 1.08, color: '#D4A96A' }, // mild
-    immune: { pace: 1.18, color: '#C9956F' },         // moderate
-    hepatic: { pace: 0.97, color: '#14B8A6' },        // decelerating
+    neurological:   { pace: 1.14, color: '#D4A96A' },  // moderate — poor deep sleep
+    cardiovascular: { pace: 1.08, color: '#D4A96A' },   // mild
+    metabolic:      { pace: 1.28, color: '#F59E0B' },   // accelerating
+    endocrine:      { pace: 1.10, color: '#D4A96A' },   // moderate — circadian disruption
+    immune:         { pace: 1.18, color: '#C9956F' },   // moderate
   },
   postMealWalks: {
-    metabolic: { pace: 1.04, color: '#2DD4C0' },
+    neurological:   { pace: 1.10, color: '#D4A96A' },
     cardiovascular: { pace: 0.99, color: '#14B8A6' },
-    immune: { pace: 1.08, color: '#A8A29E' },
-    hepatic: { pace: 0.92, color: '#14B8A6' },
+    metabolic:      { pace: 1.04, color: '#2DD4C0' },
+    endocrine:      { pace: 1.02, color: '#A8A29E' },
+    immune:         { pace: 1.08, color: '#A8A29E' },
   },
   dietaryChanges: {
-    metabolic: { pace: 1.12, color: '#D4A96A' },
+    neurological:   { pace: 1.10, color: '#D4A96A' },
     cardiovascular: { pace: 1.03, color: '#A8A29E' },
-    immune: { pace: 1.05, color: '#A8A29E' },
-    hepatic: { pace: 0.95, color: '#14B8A6' },
+    metabolic:      { pace: 1.12, color: '#D4A96A' },
+    endocrine:      { pace: 1.04, color: '#A8A29E' },
+    immune:         { pace: 1.05, color: '#A8A29E' },
   },
   sleepConsistency: {
-    metabolic: { pace: 1.16, color: '#D4A96A' },
+    neurological:   { pace: 0.98, color: '#14B8A6' },  // biggest beneficiary — sleep architecture
     cardiovascular: { pace: 1.03, color: '#A8A29E' },
-    immune: { pace: 1.06, color: '#A8A29E' },
-    hepatic: { pace: 0.96, color: '#14B8A6' },
+    metabolic:      { pace: 1.16, color: '#D4A96A' },
+    endocrine:      { pace: 1.01, color: '#A8A29E' },   // circadian rhythm improves
+    immune:         { pace: 1.06, color: '#A8A29E' },
   },
   zone2Cardio: {
-    metabolic: { pace: 1.10, color: '#D4A96A' },
+    neurological:   { pace: 1.08, color: '#D4A96A' },
     cardiovascular: { pace: 0.97, color: '#14B8A6' },
-    immune: { pace: 1.06, color: '#A8A29E' },
-    hepatic: { pace: 0.95, color: '#14B8A6' },
+    metabolic:      { pace: 1.10, color: '#D4A96A' },
+    endocrine:      { pace: 1.06, color: '#A8A29E' },
+    immune:         { pace: 1.06, color: '#A8A29E' },
   },
   timeRestrictedEating: {
-    metabolic: { pace: 1.14, color: '#D4A96A' },
+    neurological:   { pace: 1.11, color: '#D4A96A' },
     cardiovascular: { pace: 1.06, color: '#A8A29E' },
-    immune: { pace: 1.11, color: '#D4A96A' },
-    hepatic: { pace: 0.98, color: '#14B8A6' },
+    metabolic:      { pace: 1.14, color: '#D4A96A' },
+    endocrine:      { pace: 1.03, color: '#A8A29E' },   // meal timing → hormonal rhythm
+    immune:         { pace: 1.11, color: '#D4A96A' },
   },
   combined: {
-    metabolic: { pace: 0.98, color: '#14B8A6' },
+    neurological:   { pace: 0.94, color: '#14B8A6' },
     cardiovascular: { pace: 0.96, color: '#14B8A6' },
-    immune: { pace: 1.02, color: '#A8A29E' },
-    hepatic: { pace: 0.89, color: '#2DD4C0' },
+    metabolic:      { pace: 0.98, color: '#14B8A6' },
+    endocrine:      { pace: 0.95, color: '#14B8A6' },
+    immune:         { pace: 1.02, color: '#A8A29E' },
   },
 };
 
