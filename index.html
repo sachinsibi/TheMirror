@@ -3,14 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Human Model</title>
+    <title>The Mirror — 3D Human Model</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <!-- 3D viewport (right side, left reserved for future sidebar) -->
     <div id="container"></div>
-    <div id="controls-hint">
-        <p>Drag to rotate | Scroll to zoom</p>
+
+    <!-- Single hover bubble (shown on region hover) -->
+    <div id="hover-bubble">
+        <span class="bubble-indicator" id="hb-indicator"></span>
+        <span class="bubble-label" id="hb-label"></span>
+        <div class="bubble-desc" id="hb-desc"></div>
+        <div class="bubble-hint">Click to inspect</div>
     </div>
+
+    <!-- SVG overlay for connecting line -->
+    <svg id="lines-svg">
+        <defs>
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+        <line id="hb-line" stroke-width="1" stroke-opacity="0" filter="url(#glow)"/>
+        <circle id="hb-dot" r="3.5" fill-opacity="0" filter="url(#glow)"/>
+    </svg>
+
+    <!-- Detail overlay (organ + data) -->
+    <div id="detail-overlay" class="hidden">
+        <div id="detail-panel">
+            <button id="detail-close">&times;</button>
+            <div id="detail-header">
+                <h2 id="detail-title"></h2>
+                <p id="detail-desc"></p>
+            </div>
+            <div id="detail-body">
+                <div id="organ-container">
+                    <canvas id="organ-canvas"></canvas>
+                    <p id="organ-loading">LOADING MODEL<span class="dot-anim">...</span></p>
+                    <p id="organ-unavailable" class="hidden">// NO 3D MODEL AVAILABLE</p>
+                </div>
+                <div id="data-container"></div>
+            </div>
+            <div id="detail-summary"></div>
+        </div>
+    </div>
+
+    <!-- <div id="controls-hint">
+        <p>Drag to rotate &nbsp;|&nbsp; Scroll to zoom &nbsp;|&nbsp; Hover body to explore</p>
+    </div> -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>

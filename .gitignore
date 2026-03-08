@@ -1,3 +1,5 @@
+# macOS metadata
+.DS_Store
 # Dependencies
 node_modules/
 mirror-app/node_modules/
