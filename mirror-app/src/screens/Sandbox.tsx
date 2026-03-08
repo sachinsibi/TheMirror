@@ -115,7 +115,7 @@ export default function Sandbox({ preloadedInterventionId }: SandboxProps) {
     : currentBaseline.paceRange;
 
   const displayPace = hasSelections ? combinedPace : BASELINE_PACE;
-  const displayOrgans = hasSelections ? combinedOrgans : currentBaseline.organScores;
+  void (hasSelections ? combinedOrgans : currentBaseline.organScores); // reserved for future body map coloring
   const displayPaceRange = combinedPaceRange;
 
   // Highest-grade evidence among selected
