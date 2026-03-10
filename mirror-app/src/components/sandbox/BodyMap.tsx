@@ -1,8 +1,8 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { makePointMaterial, glbToPointCloud } from '../../utils/pointcloud';
+import { makeBodyPointMaterial, glbToPointCloud } from '../../utils/pointcloud';
 
 /* ─── palette ─── */
 const STATUS_COLORS = {
@@ -27,7 +27,7 @@ export interface OrganDetail {
   age: number;
   pace: number;
   trend: 'improving' | 'stable' | 'worsening';
-  topFactor: string;
+  factors: string[];
   dataSource: string;
   color: string;
 }
@@ -53,8 +53,10 @@ export default function BodyMap({ fullPage, organDetails, onZoneClick, onZoneHov
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
+  const [loaded, setLoaded] = useState(false);
 
   const cleanupRef = useRef<(() => void) | null>(null);
+  const setLoadedRef = useRef(setLoaded);
   const onZoneClickRef = useRef(onZoneClick);
   onZoneClickRef.current = onZoneClick;
   const onZoneHoverRef = useRef(onZoneHover);
@@ -106,7 +108,7 @@ export default function BodyMap({ fullPage, organDetails, onZoneClick, onZoneHov
     controls.maxDistance = 10;
     controls.target.set(0, 1, 0);
 
-    const bodyMaterial = makePointMaterial(2.0, 1.0);
+    const bodyMaterial = makeBodyPointMaterial(2.0, 1.0);
     const loader = new GLTFLoader();
 
     let humanPoints: THREE.Points | null = null;
@@ -177,6 +179,23 @@ export default function BodyMap({ fullPage, organDetails, onZoneClick, onZoneHov
 
       // Markers need the original bbox in local space (before display scaling)
       createMarkers(center, size);
+      setLoadedRef.current(true);
+
+      // Set heartbeat origin to cardiovascular region in local geometry space
+      const cvRegion = BODY_REGIONS.find(r => r.id === 'cardiovascular')!;
+      const heartOrigin = new THREE.Vector3(
+        center.x + size.x * cvRegion.offset[0],
+        center.y + size.y * cvRegion.offset[1],
+        center.z + size.z * cvRegion.offset[2],
+      );
+      bodyMaterial.uniforms.uHeartOrigin.value.copy(heartOrigin);
+
+      // Max radius = distance from heart to furthest corner of bounding box
+      const maxR = Math.max(
+        heartOrigin.distanceTo(ptGeo.boundingBox!.min),
+        heartOrigin.distanceTo(ptGeo.boundingBox!.max),
+      );
+      bodyMaterial.uniforms.uMaxRadius.value = maxR;
     });
 
     /* hover / click */
@@ -323,6 +342,9 @@ export default function BodyMap({ fullPage, organDetails, onZoneClick, onZoneHov
         ((h.group.children[0] as THREE.Mesh).material as THREE.MeshBasicMaterial).opacity = isHovered ? 0.45 : 0.22;
       });
 
+      // Drive heartbeat pulse
+      bodyMaterial.uniforms.uTime.value = performance.now() / 1000.0;
+
       controls.update();
       renderer.render(scene, camera);
 
@@ -367,6 +389,27 @@ export default function BodyMap({ fullPage, organDetails, onZoneClick, onZoneHov
   return (
     <div ref={containerRef} style={containerStyle}>
       <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+
+      {/* Loading overlay — positioned where the body model appears (~30% from left) */}
+      {!loaded && (
+        <div style={{
+          position: 'absolute',
+          left: '30%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'none', zIndex: 5,
+        }}>
+          <span style={{
+            fontFamily: 'JetBrains Mono, monospace',
+            fontSize: 12,
+            letterSpacing: '3px',
+            color: 'rgba(0, 200, 210, 0.5)',
+            animation: 'bm-pulse 1.2s ease-in-out infinite',
+          }}>
+            LOADING...
+          </span>
+        </div>
+      )}
 
       {/* SVG overlay for connecting line */}
       <svg ref={svgRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 15 }}>

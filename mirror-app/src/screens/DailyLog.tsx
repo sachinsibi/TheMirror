@@ -3,7 +3,7 @@ import { ChevronRight, ChevronDown, CheckCircle, Zap } from 'lucide-react';
 import Card from '../components/ui/Card';
 
 interface DailyLogProps {
-  onNavigateToScoreboard: () => void;
+  onNavigateToProjections: () => void;
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -145,7 +145,7 @@ function Section({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function DailyLog({ onNavigateToScoreboard }: DailyLogProps) {
+export default function DailyLog({ onNavigateToProjections }: DailyLogProps) {
   // Form state
   const [stress, setStress] = useState<StressLevel>(null);
   const [meal, setMeal] = useState<MealCategory>(null);
@@ -223,7 +223,7 @@ export default function DailyLog({ onNavigateToScoreboard }: DailyLogProps) {
           </div>
 
           <button
-            onClick={onNavigateToScoreboard}
+            onClick={onNavigateToProjections}
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '11px 20px', borderRadius: 8,

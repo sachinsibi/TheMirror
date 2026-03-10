@@ -44,6 +44,84 @@ export function makePointMaterial(pointSize: number, fade: number) {
   });
 }
 
+/* ─── heartbeat body shaders ─── */
+const bodyVertexShader = `
+  attribute float intensity;
+  varying float vIntensity;
+  varying float vPulse;
+  uniform float uPixelRatio;
+  uniform float uPointSize;
+  uniform float uTime;
+  uniform vec3  uHeartOrigin;
+  uniform float uMaxRadius;
+
+  void main() {
+    float bps       = 67.0 / 60.0;
+    float cycle     = uTime * bps;
+    float phase     = fract(cycle);
+    // Wave travels from 0.0 to 1.4 over the beat, then nothing until next beat
+    float waveFront = phase * 1.8;
+    float waveWidth = 0.18;
+
+    vec3  toPoint = position - uHeartOrigin;
+    float d       = length(toPoint);
+    float normD   = d / uMaxRadius;
+
+    // Gaussian pulse — only points near the wave front light up
+    float diff  = normD - waveFront;
+    float pulse = exp(-diff * diff / (2.0 * waveWidth * waveWidth));
+
+    // Kill pulse once wave has passed the point (only the leading edge)
+    pulse *= step(0.0, diff + waveWidth * 2.0);
+    // Fade out as wave reaches the extremities
+    pulse *= smoothstep(1.5, 0.8, waveFront);
+    // Zero out during the reset gap (wave has exited the body)
+    pulse *= step(waveFront, 1.5);
+
+    vIntensity = intensity;
+    vPulse     = pulse;
+
+    // Subtle radial displacement along the wave
+    vec3 displaced = position + normalize(toPoint + vec3(0.0001)) * pulse * 0.003;
+    vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
+    gl_PointSize = uPointSize * uPixelRatio * (3.0 / -mvPosition.z) * (1.0 + pulse * 0.12);
+    gl_Position  = projectionMatrix * mvPosition;
+  }
+`;
+
+const bodyFragmentShader = `
+  varying float vIntensity;
+  varying float vPulse;
+  uniform float uFade;
+  void main() {
+    vec2  c    = gl_PointCoord - vec2(0.5);
+    float dist = length(c);
+    if (dist > 0.5) discard;
+    vec3  baseColor = vec3(0.0, 0.75, 0.85);
+    vec3  color     = baseColor * (0.6 + vIntensity * 0.6 + vPulse * 0.35);
+    float alpha     = smoothstep(0.5, 0.15, dist) * (0.7 + vIntensity * 0.3 + vPulse * 0.25);
+    gl_FragColor = vec4(color, alpha * uFade);
+  }
+`;
+
+export function makeBodyPointMaterial(pointSize: number, fade: number) {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      uPixelRatio:  { value: Math.min(window.devicePixelRatio, 2) },
+      uPointSize:   { value: pointSize },
+      uFade:        { value: fade },
+      uTime:        { value: 0.0 },
+      uHeartOrigin: { value: new THREE.Vector3(0, 0, 0) },
+      uMaxRadius:   { value: 1.0 },
+    },
+    vertexShader: bodyVertexShader,
+    fragmentShader: bodyFragmentShader,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+}
+
 /* ─── yield the main thread for one frame ─── */
 function yieldFrame(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 0));

@@ -83,6 +83,17 @@ body {
   }
 }
 
+/* Hide all scrollbars on main scroll area */
+.main-scroll {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.main-scroll::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
 
   *,
@@ -182,44 +193,25 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-/* Bottom screen card scroll — hidden until hover */
+/* Bottom screen card scroll — no scrollbar */
 .bodymap-screen-card.scrollable {
   overflow-y: auto;
   scrollbar-width: none;
 }
 .bodymap-screen-card.scrollable::-webkit-scrollbar {
+  display: none;
   width: 0;
 }
-.bodymap-screen-card.scrollable:hover {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
-}
-.bodymap-screen-card.scrollable:hover::-webkit-scrollbar {
-  width: 4px;
-}
-.bodymap-screen-card.scrollable:hover::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 2px;
-}
 
-/* Custom scrollbar — matches page aesthetic */
+/* Hide all scrollbars globally */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 200, 220, 0.2) transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 *::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
-*::-webkit-scrollbar-thumb {
-  background: rgba(0, 200, 220, 0.2);
-  border-radius: 2px;
-}
-*::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 200, 220, 0.4);
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 @keyframes panelSlideIn {

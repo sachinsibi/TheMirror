@@ -23,8 +23,8 @@ export default function Card({ children, style, accent = 'none', onClick, hover 
       onMouseEnter={() => hover && setIsHovered(true)}
       onMouseLeave={() => hover && setIsHovered(false)}
       style={{
-        background: isHovered ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.06)',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
+        background: isHovered ? '#1a1a1a' : '#121212',
+        border: '1px solid #222222',
         borderRadius: 12,
         padding: '20px 24px',
         boxShadow: '0 1px 3px rgba(0,0,0,0.4)',

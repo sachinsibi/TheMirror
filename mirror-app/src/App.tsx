@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Sidebar, { type Screen } from './components/layout/Sidebar';
 import Dashboard from './screens/Dashboard';
-import Scoreboard from './screens/Scoreboard';
+import Projections from './screens/Projections';
 import BodyMapScreen from './screens/BodyMap';
 import DailyLog from './screens/DailyLog';
 import Profile from './screens/Profile';
@@ -19,23 +19,21 @@ export default function App() {
     <div style={{ display: 'flex', height: '100vh', background: 'var(--color-bg-base)', overflow: 'hidden' }}>
       <Sidebar active={screen} onNavigate={navigateTo} />
 
-      <main style={{ marginLeft: 60, flex: 1, overflow: screen === 'bodymap' ? 'hidden' : 'auto', background: 'var(--color-bg-base)', position: 'relative' }}>
+      <main className="main-scroll" style={{ marginLeft: 64, flex: 1, overflowX: 'hidden', overflowY: screen === 'bodymap' ? 'hidden' : 'auto', background: 'var(--color-bg-base)', position: 'relative' }}>
         {screen === 'bodymap' ? (
-          <BodyMapScreen onNavigateToScoreboard={() => navigateTo('scoreboard')} />
+          <BodyMapScreen onNavigateToProjections={() => navigateTo('projections')} />
         ) : (
           <div style={{ padding: '40px 52px', maxWidth: 1100, margin: '0 auto' }}>
             {screen === 'home' && (
               <Dashboard
                 onNavigateToProfile={() => navigateTo('profile')}
-                onNavigateToScoreboard={() => navigateTo('scoreboard')}
+                onNavigateToProjections={() => navigateTo('projections')}
                 onNavigateToLog={() => navigateTo('log')}
               />
             )}
-            {screen === 'scoreboard' && (
-              <Scoreboard onNavigateToSandbox={() => { /* sandbox removed */ }} />
-            )}
+            {screen === 'projections' && <Projections />}
             {screen === 'log' && (
-              <DailyLog onNavigateToScoreboard={() => navigateTo('scoreboard')} />
+              <DailyLog onNavigateToProjections={() => navigateTo('projections')} />
             )}
             {screen === 'profile' && <Profile />}
           </div>

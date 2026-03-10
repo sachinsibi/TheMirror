@@ -35,8 +35,8 @@ export default function PaceGauge({
 
   function paceToRad(p: number): number {
     const t = Math.max(0, Math.min(1, (p - minPace) / (maxPace - minPace)));
-    // t=0 (slow/teal) → 0° right, t=1 (fast/amber) → 180° left
-    const deg = t * 180; // 0→180°
+    // t=0 (slow/teal) → 180° left, t=1 (fast/amber) → 0° right
+    const deg = (1 - t) * 180;
     return (deg * Math.PI) / 180;
   }
 
@@ -119,11 +119,11 @@ export default function PaceGauge({
       >
         <defs>
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#F59E0B" />
-            <stop offset="30%" stopColor="#D4A96A" />
+            <stop offset="0%" stopColor="#14B8A6" />
+            <stop offset="30%" stopColor="#6DBDB4" />
             <stop offset="50%" stopColor="#A8A29E" />
-            <stop offset="70%" stopColor="#6DBDB4" />
-            <stop offset="100%" stopColor="#14B8A6" />
+            <stop offset="70%" stopColor="#D4A96A" />
+            <stop offset="100%" stopColor="#F59E0B" />
           </linearGradient>
           <filter id={glowId}>
             <feGaussianBlur stdDeviation={isMini ? "3" : "5"} result="blur" />
@@ -188,9 +188,9 @@ export default function PaceGauge({
         {/* Labels */}
         {!isMini && (
           <>
-            <text x={cx - R - strokeW} y={cy + 20} fill="var(--color-text-tertiary)" fontSize={11} textAnchor="middle">1.3×</text>
+            <text x={cx - R - strokeW} y={cy + 20} fill="var(--color-text-tertiary)" fontSize={11} textAnchor="middle">0.8×</text>
             <text x={cx} y={cy - R - strokeW - 8} fill="var(--color-text-tertiary)" fontSize={11} textAnchor="middle">1.0×</text>
-            <text x={cx + R + strokeW} y={cy + 20} fill="var(--color-text-tertiary)" fontSize={11} textAnchor="middle">0.8×</text>
+            <text x={cx + R + strokeW} y={cy + 20} fill="var(--color-text-tertiary)" fontSize={11} textAnchor="middle">1.3×</text>
           </>
         )}
       </svg>

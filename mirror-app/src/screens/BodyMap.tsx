@@ -9,7 +9,7 @@ interface OrganDetail {
   age: number;
   pace: number;
   trend: 'improving' | 'stable' | 'worsening';
-  topFactor: string;
+  factors: string[];
   dataSource: string;
   color: string;
   organPath: string;
@@ -20,9 +20,13 @@ const ORGAN_DETAILS: OrganDetail[] = [
     id: 'neurological',
     name: 'Neurological',
     age: 56.4,
-    pace: 1.14,
+    pace: 1.10,
     trend: 'worsening',
-    topFactor: 'Deep sleep declining — avg 1.4h (target 1.8h+)',
+    factors: [
+      'Deep sleep averaging 1.4h — target 1.8h+ for neurological repair',
+      'Bedtime variance of ±1.8h disrupting sleep architecture and REM',
+      'Elevated overnight cortisol suppressing restorative sleep stages',
+    ],
     dataSource: 'Brain · Wearable (sleep architecture: deep sleep, REM)',
     color: '#4ae616',
     organPath: '/models/brain.glb',
@@ -31,9 +35,13 @@ const ORGAN_DETAILS: OrganDetail[] = [
     id: 'cardiovascular',
     name: 'Cardiovascular',
     age: 55.8,
-    pace: 1.08,
+    pace: 1.09,
     trend: 'stable',
-    topFactor: 'Resting HRV declining 3% week-over-week',
+    factors: [
+      'Resting HRV declining 3% week-over-week — now at 42ms',
+      'Zone 2 cardio absent — fewer than 60 active minutes this week',
+      'Sleep disruptions compressing overnight cardiovascular recovery',
+    ],
     dataSource: 'Heart · Wearable (HRV, resting HR)',
     color: '#4ae616',
     organPath: '/models/heart.glb',
@@ -42,9 +50,13 @@ const ORGAN_DETAILS: OrganDetail[] = [
     id: 'metabolic',
     name: 'Metabolic',
     age: 60.1,
-    pace: 1.28,
+    pace: 1.18,
     trend: 'worsening',
-    topFactor: 'Post-meal glucose spikes (avg +47 mg/dL)',
+    factors: [
+      'Post-meal glucose spikes averaging +47mg/dL above fasting baseline',
+      'Late dinners (past 9pm) on 3 nights — elevating overnight fasting glucose',
+      'No post-meal walks Tuesday or Wednesday — peak glucose spike days',
+    ],
     dataSource: 'Pancreas · CGM (glucose variability, postprandial response)',
     color: '#f5700b',
     organPath: '/models/pancreas.glb',
@@ -53,9 +65,13 @@ const ORGAN_DETAILS: OrganDetail[] = [
     id: 'endocrine',
     name: 'Endocrine',
     age: 57.0,
-    pace: 1.10,
+    pace: 1.12,
     trend: 'stable',
-    topFactor: 'Circadian temperature rhythm irregular — late light exposure',
+    factors: [
+      'Meal timing variance of 2.4h disrupting cortisol and insulin rhythm',
+      'Overnight fasting window averaging 10.2h — target 12h for hormonal reset',
+      'Weekday morning HRV dips indicate sustained cortisol load',
+    ],
     dataSource: 'Thyroid · Wearable (temperature trends, HRV circadian) + CGM',
     color: '#eaea08',
     organPath: '/models/thyroid.glb',
@@ -64,9 +80,13 @@ const ORGAN_DETAILS: OrganDetail[] = [
     id: 'immune',
     name: 'Immune',
     age: 58.3,
-    pace: 1.18,
+    pace: 1.14,
     trend: 'improving',
-    topFactor: 'Inflammatory load elevated by late dinners',
+    factors: [
+      'Late-night eating compressing the overnight inflammatory repair window',
+      'Post-meal glucose excursions driving low-grade glycation stress',
+      'Improved sleep consistency this week reducing inflammatory marker load',
+    ],
     dataSource: 'Spleen · Epigenetic (immunosenescence, inflammatory markers)',
     color: '#eaea08',
     organPath: '/models/spleen.glb',
@@ -79,10 +99,10 @@ const ORGAN_DETAILS_FOR_VIZ = ORGAN_DETAILS.map(({ organPath, ...rest }) => rest
 let _persistedOrganId: string | null = null;
 
 interface BodyMapScreenProps {
-  onNavigateToScoreboard: () => void;
+  onNavigateToProjections: () => void;
 }
 
-export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenProps) {
+export default function BodyMapScreen({ onNavigateToProjections }: BodyMapScreenProps) {
   const [selectedOrgan, setSelectedOrgan] = useState<OrganDetail | null>(
     () => _persistedOrganId ? (ORGAN_DETAILS.find(o => o.id === _persistedOrganId) ?? null) : null
   );
@@ -102,6 +122,20 @@ export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenP
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+
+      {/* Page title — top left overlay */}
+      <div style={{
+        position: 'absolute', top: 24, left: 28, zIndex: 20,
+        pointerEvents: 'none',
+      }}>
+        <h1 style={{
+          margin: 0, fontSize: 22, fontWeight: 700,
+          color: 'var(--color-text-primary)', letterSpacing: '-0.02em',
+        }}>
+          Body Map
+        </h1>
+      </div>
+
       {/* Full-page 3D body */}
       <BodyMapViz
         fullPage
@@ -135,7 +169,7 @@ export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenP
               <OrganMetrics
                 organ={selectedOrgan}
                 onClose={handleClose}
-                onNavigateToScoreboard={onNavigateToScoreboard}
+                onNavigateToProjections={onNavigateToProjections}
               />
             </div>
           ) : (

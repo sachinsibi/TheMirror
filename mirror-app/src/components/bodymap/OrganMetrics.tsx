@@ -1,4 +1,3 @@
-import { ChevronRight } from 'lucide-react';
 
 interface OrganDetail {
   id: string;
@@ -6,7 +5,7 @@ interface OrganDetail {
   age: number;
   pace: number;
   trend: 'improving' | 'stable' | 'worsening';
-  topFactor: string;
+  factors: string[];
   dataSource: string;
   color: string;
 }
@@ -20,10 +19,10 @@ const TREND_DISPLAY = {
 interface OrganMetricsProps {
   organ: OrganDetail;
   onClose: () => void;
-  onNavigateToScoreboard: () => void;
+  onNavigateToProjections: () => void;
 }
 
-export default function OrganMetrics({ organ, onNavigateToScoreboard }: OrganMetricsProps) {
+export default function OrganMetrics({ organ }: OrganMetricsProps) {
   const trend = TREND_DISPLAY[organ.trend];
 
   return (
@@ -86,14 +85,19 @@ export default function OrganMetrics({ organ, onNavigateToScoreboard }: OrganMet
         </div>
       </div>
 
-      {/* Top factor */}
+      {/* Contributing factors */}
       <div style={{ marginBottom: 12 }}>
-        <div style={{ fontSize: 10, color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase' as const, letterSpacing: '1px' }}>
-          Top Contributing Factor
+        <div style={{ fontSize: 10, color: 'var(--color-text-tertiary)', marginBottom: 8, textTransform: 'uppercase' as const, letterSpacing: '1px' }}>
+          Contributing Factors
         </div>
-        <div style={{ fontSize: 13, color: 'var(--color-text-primary)', lineHeight: 1.4 }}>
-          {organ.topFactor}
-        </div>
+        <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 7 }}>
+          {organ.factors.map((factor, i) => (
+            <li key={i} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+              <span style={{ color: 'rgba(0,200,220,0.4)', fontSize: 11, flexShrink: 0, marginTop: 2, lineHeight: 1 }}>▸</span>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.55 }}>{factor}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       {/* Data source */}
@@ -102,24 +106,9 @@ export default function OrganMetrics({ organ, onNavigateToScoreboard }: OrganMet
           Data Source
         </div>
         <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', fontStyle: 'italic' }}>
-          {organ.dataSource}
+          {organ.dataSource.includes(' · ') ? organ.dataSource.split(' · ').slice(1).join(' · ') : organ.dataSource}
         </div>
       </div>
-
-      {/* Action button */}
-      <button
-        onClick={onNavigateToScoreboard}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 6, width: '100%',
-          padding: '10px 14px', borderRadius: 6,
-          background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.25)',
-          color: '#A78BFA', fontSize: 12, fontWeight: 500,
-          cursor: 'pointer', fontFamily: 'inherit',
-          justifyContent: 'center',
-        }}
-      >
-        See habits affecting {organ.name.toLowerCase()} aging <ChevronRight size={13} />
-      </button>
     </div>
   );
 }
