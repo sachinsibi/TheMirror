@@ -1,33 +1,32 @@
 import {
-  Home, Trophy, FlaskConical, User, BookOpen, ActivitySquare
+  Home, TrendingUp, ActivitySquare, BookOpen
 } from 'lucide-react';
 
-export type Screen = 'home' | 'scoreboard' | 'sandbox' | 'bodymap' | 'log' | 'profile';
+export type Screen = 'home' | 'scoreboard' | 'bodymap' | 'log' | 'profile';
 
 interface SidebarProps {
   active: Screen;
   onNavigate: (screen: Screen) => void;
 }
 
-const NAV = [
-  { id: 'home' as Screen, label: 'Home', Icon: Home },
-  { id: 'scoreboard' as Screen, label: 'Scoreboard', Icon: Trophy },
-  { id: 'sandbox' as Screen, label: 'Sandbox', Icon: FlaskConical },
-  { id: 'bodymap' as Screen, label: 'Body Map', Icon: ActivitySquare },
-  { id: 'log' as Screen, label: 'Daily Log', Icon: BookOpen },
-  { id: 'profile' as Screen, label: 'Profile', Icon: User },
+const NAV: { id: Screen; Icon: typeof Home }[] = [
+  { id: 'home', Icon: Home },
+  { id: 'scoreboard', Icon: TrendingUp },
+  { id: 'bodymap', Icon: ActivitySquare },
+  { id: 'log', Icon: BookOpen },
 ];
 
 export default function Sidebar({ active, onNavigate }: SidebarProps) {
   return (
     <aside
       style={{
-        width: 220,
-        minWidth: 220,
+        width: 60,
+        minWidth: 60,
         background: 'var(--color-bg-surface)',
         borderRight: '1px solid rgba(255,255,255,0.05)',
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'center',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -35,34 +34,24 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
         zIndex: 10,
       }}
     >
-      {/* Logo */}
-      <div style={{ padding: '24px 20px 20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: 8,
-              background: 'linear-gradient(135deg, #8B5CF6, #14B8A6)',
-              flexShrink: 0,
-            }}
-          />
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-primary)', letterSpacing: '-0.01em' }}>
-              The Mirror
-            </div>
-            <div style={{ fontSize: 10, color: 'var(--color-text-tertiary)', marginTop: 1 }}>
-              Advance Health 2026
-            </div>
-          </div>
-        </div>
+      {/* Logo icon */}
+      <div style={{ padding: '20px 0 16px' }}>
+        <div
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: 8,
+            background: 'linear-gradient(135deg, #8B5CF6, #14B8A6)',
+            flexShrink: 0,
+          }}
+        />
       </div>
 
-      <div style={{ height: 1, background: 'rgba(255,255,255,0.05)', margin: '0 16px 12px' }} />
+      <div style={{ height: 1, width: 28, background: 'rgba(255,255,255,0.05)', marginBottom: 12 }} />
 
       {/* Nav */}
-      <nav style={{ display: 'flex', flexDirection: 'column', padding: '0 10px', gap: 2 }}>
-        {NAV.map(({ id, label, Icon }) => {
+      <nav style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: '100%' }}>
+        {NAV.map(({ id, Icon }) => {
           const isActive = active === id;
           return (
             <button
@@ -71,19 +60,15 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 10,
+                justifyContent: 'center',
+                width: 44,
                 height: 44,
-                padding: '0 12px',
                 borderRadius: 8,
                 border: 'none',
                 cursor: 'pointer',
                 background: isActive ? 'rgba(139,92,246,0.12)' : 'transparent',
                 color: isActive ? '#A78BFA' : 'var(--color-text-tertiary)',
-                fontSize: 13.5,
-                fontWeight: isActive ? 600 : 400,
-                textAlign: 'left',
                 transition: 'background 150ms ease, color 150ms ease',
-                fontFamily: 'inherit',
                 position: 'relative',
               }}
               onMouseEnter={e => {
@@ -111,31 +96,32 @@ export default function Sidebar({ active, onNavigate }: SidebarProps) {
                   background: '#8B5CF6',
                 }} />
               )}
-              <Icon size={17} />
-              {label}
+              <Icon size={20} />
             </button>
           );
         })}
       </nav>
 
-      {/* User badge */}
-      <div style={{ marginTop: 'auto', padding: '16px 10px' }}>
-        <div style={{ height: 1, background: 'rgba(255,255,255,0.05)', marginBottom: 12 }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '4px 8px' }}>
-          <div style={{
-            width: 32, height: 32,
+      {/* Profile avatar — pinned to bottom */}
+      <div style={{ marginTop: 'auto', paddingBottom: 16 }}>
+        <div style={{ height: 1, width: 28, background: 'rgba(255,255,255,0.05)', marginBottom: 12 }} />
+        <button
+          onClick={() => onNavigate('profile')}
+          style={{
+            width: 36, height: 36,
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #8B5CF6, #14B8A6)',
+            background: active === 'profile'
+              ? 'linear-gradient(135deg, #8B5CF6, #14B8A6)'
+              : 'rgba(139,92,246,0.15)',
+            border: active === 'profile' ? '2px solid #8B5CF6' : '2px solid transparent',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 13, fontWeight: 700, color: '#fff', flexShrink: 0,
-          }}>
-            J
-          </div>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text-primary)' }}>James</div>
-            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>Age 52 · Bio age 57</div>
-          </div>
-        </div>
+            fontSize: 13, fontWeight: 700, color: '#fff',
+            cursor: 'pointer',
+            transition: 'border-color 150ms ease',
+          }}
+        >
+          J
+        </button>
       </div>
     </aside>
   );
