@@ -23,12 +23,11 @@ const BIO_AGE_HISTORY = [
 
 interface DashboardProps {
   onNavigateToProfile: () => void;
-  onNavigateToProjections: () => void;
   onNavigateToBodyMap: () => void;
   onNavigateToLog: () => void;
 }
 
-export default function Dashboard({ onNavigateToProfile, onNavigateToProjections, onNavigateToBodyMap, onNavigateToLog }: DashboardProps) {
+export default function Dashboard({ onNavigateToProfile, onNavigateToBodyMap, onNavigateToLog }: DashboardProps) {
   const verdict = getVerdictSentence(USER.dunedinPace);
 
   return (

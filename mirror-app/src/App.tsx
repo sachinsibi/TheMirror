@@ -30,7 +30,6 @@ export default function App() {
           <div style={{ display: screen === 'home' ? 'block' : 'none' }}>
             <Dashboard
               onNavigateToProfile={() => navigateTo('profile')}
-              onNavigateToProjections={() => navigateTo('projections')}
               onNavigateToBodyMap={() => navigateTo('bodymap')}
               onNavigateToLog={() => navigateTo('log')}
             />

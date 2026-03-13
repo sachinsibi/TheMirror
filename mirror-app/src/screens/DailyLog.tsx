@@ -411,10 +411,9 @@ const ARC_DEFS = [
 
 // ─── Hub SVG (arcs + spokes) ──────────────────────────────────────────────────
 
-function HubSVG({ mounted, onNodeClick, progressMap }: {
+function HubSVG({ mounted, onNodeClick }: {
   mounted: boolean;
   onNodeClick: (cat: ModalCategory) => void;
-  progressMap: Record<string, number>;
 }) {
   const [hovered, setHovered] = useState<string | null>(null);
 
@@ -495,10 +494,10 @@ function ArcLabels({ mounted, onNodeClick, progressMap }: {
 }) {
   return (
     <>
-      {ARC_DEFS.map(({ label, category, angle, Icon, autoCount, total }, i) => {
+      {ARC_DEFS.map(({ label, category, angle, Icon, total }, i) => {
         const x = CX + R_MID * Math.cos(toRad(angle));
         const y = CY + R_MID * Math.sin(toRad(angle));
-        const progress = progressMap[category] ?? 0;
+        const progress = category ? progressMap[category] ?? 0 : 0;
         return (
           <div
             key={category}
@@ -688,8 +687,6 @@ export default function DailyLog({ onNavigateToProjections }: DailyLogProps) {
 
   const totalFilled = fitnessProgress + nutritionProgress + recoveryProgress;
   const totalManual = 7;
-
-  const handleSubmit = () => setSubmitted(true);
 
   // ── Success state ──────────────────────────────────────────────────────────
   if (submitted) {
@@ -1122,7 +1119,6 @@ export default function DailyLog({ onNavigateToProjections }: DailyLogProps) {
         <HubSVG
           mounted={mounted}
           onNodeClick={setActiveModal}
-          progressMap={{ fitness: fitnessProgress, nutrition: nutritionProgress, recovery: recoveryProgress }}
         />
 
         {/* Center date circle */}
