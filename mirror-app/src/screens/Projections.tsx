@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import FanChart from '../components/sandbox/FanChart';
 import Card from '../components/ui/Card';
 import { SparklineChart } from '../components/scoreboard/SparklineChart';
+import SystemRadar from '../components/projections/SystemRadar';
 import { INTERVENTIONS, SCOREBOARD_HABITS, WEEKLY_TREND } from '../data/synthetic';
 
 const BASELINE_PACE = 1.12;
@@ -29,6 +30,7 @@ function computeCombinedChartPace(selected: Intervention[]): number {
   );
   return Math.max(0.05, BASELINE_CHART_PACE * fractionProduct);
 }
+
 
 const HABIT_DETAILS: Record<string, { description: string; why: string }> = {
   'post-meal-walks': {
@@ -65,7 +67,7 @@ function getProjectionNarrative(selectedIds: string[], selected: Intervention[],
   if (selectedIds.length === 0) {
     return {
       headline: 'Your current trajectory',
-      body: "At your current pace of 1.12×, your biological age is advancing faster than your calendar age. Without change, you are projected to reach a biological age of 62.4 by the time you turn 54 — roughly 8 years ahead of chronological expectation. The primary driver is metabolic stress from postprandial glucose spikes, compounded by inconsistent sleep.",
+      body: "At your current pace of 1.12×, your biological age is advancing faster than your calendar age. Without change, you are projected to reach a biological age of 59.4 by the time you turn 54 — roughly 5 years ahead of chronological expectation. The primary driver is metabolic stress from postprandial glucose spikes, compounded by inconsistent sleep.",
     };
   }
   if (selectedIds.length === 1) {
@@ -223,7 +225,7 @@ export default function Projections() {
             </h2>
             {hasSelections && (
               <button
-                onClick={() => setSelectedIds([])}
+                onClick={() => { setSelectedIds([]); setExpandedId(null); }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 4,
                   background: 'none', border: 'none', cursor: 'pointer',
@@ -236,8 +238,18 @@ export default function Projections() {
             )}
           </div>
 
-          {/* Habit rows */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {/* Habit rows — scrollable container showing ~5 at a time */}
+          <div style={{
+            height: 300,
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 3,
+            scrollbarWidth: 'thin',
+            scrollbarColor: 'rgba(255,255,255,0.1) transparent',
+          }}
+            className="habit-scroll"
+          >
             {SCOREBOARD_HABITS.map((habit, idx) => {
               const isChecked = selectedIds.includes(habit.interventionId);
               const isExpanded = expandedId === habit.interventionId;
@@ -245,20 +257,19 @@ export default function Projections() {
               const evidenceGrade = interventionOptions.find(i => i.id === habit.interventionId)?.evidence?.grade;
 
               return (
-                <div key={habit.id} style={{ borderRadius: 10, overflow: 'hidden' }}>
-                  {/* Row — click opens accordion */}
+                <div key={habit.id} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+
+                  {/* Row — click toggles dropdown */}
                   <div
                     onClick={() => toggleAccordion(habit.interventionId)}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 10,
                       padding: '11px 14px',
+                      borderRadius: 10,
                       userSelect: 'none',
-                      background: isChecked ? 'rgba(20,184,166,0.07)' : '#121212',
+                      background: isChecked ? 'rgba(20,184,166,0.07)' : '#131315',
                       border: isChecked ? '1px solid rgba(20,184,166,0.22)' : '1px solid #222222',
                       borderLeft: isChecked ? '3px solid #14B8A6' : '3px solid transparent',
-                      borderBottom: isExpanded ? 'none' : undefined,
-                      borderBottomLeftRadius: isExpanded ? 0 : 10,
-                      borderBottomRightRadius: isExpanded ? 0 : 10,
                       cursor: 'pointer',
                       transition: 'background 150ms ease',
                     }}
@@ -266,10 +277,10 @@ export default function Projections() {
                       if (!isChecked) (e.currentTarget as HTMLElement).style.background = '#181818';
                     }}
                     onMouseLeave={e => {
-                      if (!isChecked) (e.currentTarget as HTMLElement).style.background = '#121212';
+                      if (!isChecked) (e.currentTarget as HTMLElement).style.background = '#131315';
                     }}
                   >
-                    {/* Checkbox */}
+                    {/* Checkbox — click only, does not bubble to row */}
                     <Checkbox
                       checked={isChecked}
                       onChange={(e) => toggleCheckbox(e, habit.interventionId)}
@@ -297,46 +308,53 @@ export default function Projections() {
                     }
                   </div>
 
-                  {/* Accordion */}
+                  {/* Dropdown panel — visually separate from the row */}
                   {isExpanded && details && (
                     <div style={{
-                      padding: '14px 16px 16px',
-                      background: isChecked ? 'rgba(20,184,166,0.04)' : '#0e0e0e',
-                      border: isChecked ? '1px solid rgba(20,184,166,0.22)' : '1px solid #222222',
-                      borderTop: '1px solid #1a1a1a',
-                      borderBottomLeftRadius: 10,
-                      borderBottomRightRadius: 10,
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      background: '#0e0e0e',
+                      border: '1px solid #1e1e1e',
                       display: 'flex', flexDirection: 'column', gap: 10,
                     }}>
                       <p style={{ margin: 0, fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
                         {details.description}
                       </p>
-                      <div>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 5 }}>
-                          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                            Why this was chosen for you
-                          </div>
-                          {evidenceGrade && (
-                            <span style={{
-                              fontSize: 10, fontWeight: 600, letterSpacing: '0.05em',
-                              padding: '2px 7px', borderRadius: 4, flexShrink: 0,
-                              color: evidenceGrade === 'STRONG RCT' ? '#14B8A6' : evidenceGrade === 'MODERATE RCT' ? '#F59E0B' : '#94A3B8',
-                              background: evidenceGrade === 'STRONG RCT' ? 'rgba(20,184,166,0.1)' : evidenceGrade === 'MODERATE RCT' ? 'rgba(245,158,11,0.1)' : 'rgba(148,163,184,0.1)',
-                              border: `1px solid ${evidenceGrade === 'STRONG RCT' ? 'rgba(20,184,166,0.2)' : evidenceGrade === 'MODERATE RCT' ? 'rgba(245,158,11,0.2)' : 'rgba(148,163,184,0.2)'}`,
-                            }}>
-                              {evidenceGrade}
-                            </span>
-                          )}
+                      <div style={{ height: 1, background: '#1e1e1e' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                          Why this was chosen for you
                         </div>
-                        <p style={{ margin: 0, fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
-                          {details.why}
-                        </p>
+                        {evidenceGrade && (
+                          <span style={{
+                            fontSize: 9, fontWeight: 600, letterSpacing: '0.05em',
+                            padding: '2px 6px', borderRadius: 4, flexShrink: 0,
+                            color: evidenceGrade === 'STRONG RCT' ? '#14B8A6' : evidenceGrade === 'MODERATE RCT' ? '#F59E0B' : '#94A3B8',
+                            background: evidenceGrade === 'STRONG RCT' ? 'rgba(20,184,166,0.1)' : evidenceGrade === 'MODERATE RCT' ? 'rgba(245,158,11,0.1)' : 'rgba(148,163,184,0.1)',
+                            border: `1px solid ${evidenceGrade === 'STRONG RCT' ? 'rgba(20,184,166,0.2)' : evidenceGrade === 'MODERATE RCT' ? 'rgba(245,158,11,0.2)' : 'rgba(148,163,184,0.2)'}`,
+                          }}>
+                            {evidenceGrade}
+                          </span>
+                        )}
                       </div>
+                      <p style={{ margin: 0, fontSize: 12, color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
+                        {details.why}
+                      </p>
                     </div>
                   )}
                 </div>
               );
             })}
+          </div>
+
+          {/* System Projections — radar chart */}
+          <div style={{ marginTop: 12 }}>
+            <h2 style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600, color: 'var(--color-text-secondary)', letterSpacing: '0.01em' }}>
+              System Projections
+            </h2>
+            <Card style={{ padding: '20px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <SystemRadar selectedIds={selectedIds} />
+            </Card>
           </div>
         </div>
 

@@ -8,7 +8,7 @@
   --color-amber: #F59E0B;
   --color-neutral: #A8A29E;
   --color-teal: #14B8A6;
-  --color-violet: #8B5CF6;
+  --color-violet: #14B8A6;
   --color-text-primary: #F1F5F9;
   --color-text-secondary: #94A3B8;
   --color-text-tertiary: #475569;
@@ -174,7 +174,7 @@ body {
   flex-direction: column;
   gap: 16px;
   padding: 20px 16px 20px 16px;
-  background: #121212;
+  background: #131315;
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-right: none;
   border-radius: 18px 0 0 18px;
@@ -212,6 +212,26 @@ body {
   display: none;
   width: 0;
   height: 0;
+}
+
+/* Habit suggestions scrollable container — thin visible scrollbar */
+.habit-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.12) transparent;
+}
+.habit-scroll::-webkit-scrollbar {
+  display: block;
+  width: 4px;
+}
+.habit-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.habit-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 4px;
+}
+.habit-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.22);
 }
 
 @keyframes panelSlideIn {

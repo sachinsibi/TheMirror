@@ -3,6 +3,7 @@ interface OrganDetail {
   id: string;
   name: string;
   age: number;
+  ageRange: { low: number; high: number };
   pace: number;
   trend: 'improving' | 'stable' | 'worsening';
   factors: string[];
@@ -11,9 +12,9 @@ interface OrganDetail {
 }
 
 const TREND_DISPLAY = {
-  improving: { label: '↓ Improving', color: '#14B8A6' },
-  stable: { label: '→ Stable', color: '#A8A29E' },
-  worsening: { label: '↑ Worsening', color: '#F59E0B' },
+  improving: { label: 'Improving', color: '#22C55E' },
+  stable: { label: 'Stable', color: '#A8A29E' },
+  worsening: { label: 'Worsening', color: '#F59E0B' },
 };
 
 interface OrganMetricsProps {
@@ -50,12 +51,15 @@ export default function OrganMetrics({ organ }: OrganMetricsProps) {
         </div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
           <span style={{
-            fontFamily: 'JetBrains Mono, monospace', fontSize: 36,
+            fontFamily: 'JetBrains Mono, monospace', fontSize: 32,
             fontWeight: 700, color: organ.color, lineHeight: 1,
           }}>
-            ~{organ.age}
+            {organ.ageRange.low}–{organ.ageRange.high}
           </span>
           <span style={{ fontSize: 14, color: 'var(--color-text-tertiary)' }}>years</span>
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginTop: 3 }}>
+          estimated range (95% CI)
         </div>
       </div>
 

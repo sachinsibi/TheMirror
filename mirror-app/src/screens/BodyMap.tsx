@@ -7,6 +7,7 @@ interface OrganDetail {
   id: string;
   name: string;
   age: number;
+  ageRange: { low: number; high: number };
   pace: number;
   trend: 'improving' | 'stable' | 'worsening';
   factors: string[];
@@ -20,6 +21,7 @@ const ORGAN_DETAILS: OrganDetail[] = [
     id: 'neurological',
     name: 'Neurological',
     age: 56.4,
+    ageRange: { low: 54.9, high: 57.9 },
     pace: 1.10,
     trend: 'worsening',
     factors: [
@@ -35,6 +37,7 @@ const ORGAN_DETAILS: OrganDetail[] = [
     id: 'cardiovascular',
     name: 'Cardiovascular',
     age: 55.8,
+    ageRange: { low: 54.3, high: 57.3 },
     pace: 1.09,
     trend: 'stable',
     factors: [
@@ -50,6 +53,7 @@ const ORGAN_DETAILS: OrganDetail[] = [
     id: 'metabolic',
     name: 'Metabolic',
     age: 60.1,
+    ageRange: { low: 58.4, high: 61.8 },
     pace: 1.18,
     trend: 'worsening',
     factors: [
@@ -65,6 +69,7 @@ const ORGAN_DETAILS: OrganDetail[] = [
     id: 'endocrine',
     name: 'Endocrine',
     age: 57.0,
+    ageRange: { low: 55.5, high: 58.5 },
     pace: 1.12,
     trend: 'stable',
     factors: [
@@ -80,6 +85,7 @@ const ORGAN_DETAILS: OrganDetail[] = [
     id: 'immune',
     name: 'Immune',
     age: 58.3,
+    ageRange: { low: 56.8, high: 59.8 },
     pace: 1.14,
     trend: 'improving',
     factors: [
@@ -125,7 +131,7 @@ export default function BodyMapScreen({ onNavigateToProjections }: BodyMapScreen
 
       {/* Page title — top left overlay */}
       <div style={{
-        position: 'absolute', top: 24, left: 28, zIndex: 20,
+        position: 'absolute', top: 40, left: 168, zIndex: 20,
         pointerEvents: 'none',
       }}>
         <h1 style={{

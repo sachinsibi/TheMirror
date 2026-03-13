@@ -355,18 +355,26 @@ export default function BodyMap({ fullPage, organDetails, onZoneClick, onZoneHov
     function onResize() {
       const w = container.clientWidth;
       const h = container.clientHeight;
+      if (w === 0 || h === 0) return;
       renderer.setSize(w, h);
       bodyMaterial.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2);
       // Reapply view offset (aspect ratio is handled inside setViewOffset)
       camera.setViewOffset(2 * w, h, Math.round(0.70 * w), 0, w, h);
     }
+
+    // ResizeObserver fires when the container first gets its layout dimensions,
+    // fixing the blank-on-load bug (DevTools open triggers resize → fixes it).
+    const resizeObserver = new ResizeObserver(() => onResize());
+    resizeObserver.observe(container);
     window.addEventListener('resize', onResize);
+    onResize(); // sync call in case layout is already settled
 
     animate();
 
     return () => {
       disposed = true;
       cancelAnimationFrame(animId);
+      resizeObserver.disconnect();
       window.removeEventListener('resize', onResize);
       renderer.domElement.removeEventListener('mousedown', onPointerDown);
       renderer.domElement.removeEventListener('mousemove', onMouseMove);

@@ -14,7 +14,7 @@ export default function Card({ children, style, accent = 'none', onClick, hover 
   const accentStyle: React.CSSProperties =
     accent === 'teal' ? { borderLeft: '3px solid #14B8A6' }
       : accent === 'amber' ? { borderLeft: '3px solid #F59E0B' }
-        : accent === 'violet' ? { borderLeft: '3px solid #8B5CF6' }
+        : accent === 'violet' ? { borderLeft: '3px solid #14B8A6' }
           : {};
 
   return (
@@ -23,7 +23,7 @@ export default function Card({ children, style, accent = 'none', onClick, hover 
       onMouseEnter={() => hover && setIsHovered(true)}
       onMouseLeave={() => hover && setIsHovered(false)}
       style={{
-        background: isHovered ? '#1a1a1a' : '#121212',
+        background: isHovered ? '#191919' : '#131315',
         border: '1px solid #222222',
         borderRadius: 12,
         padding: '20px 24px',
