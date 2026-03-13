@@ -154,7 +154,7 @@ export default function BodyMap({ fullPage, organDetails, onZoneClick, onZoneHov
     }
 
     /* load body — async so point sampling yields between chunks */
-    glbToPointCloud(loader, '/models/body.glb', 25000, bodyMaterial).then((points) => {
+    glbToPointCloud(loader, '/models/body.glb', 12500, bodyMaterial).then((points) => {
       if (disposed || !points) return;
       humanPoints = points;
 
