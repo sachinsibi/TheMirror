@@ -1,18 +1,19 @@
-import { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { useState, useCallback } from 'react';
 import BodyMapViz from '../components/sandbox/BodyMap';
-import Card from '../components/ui/Card';
-import { USER } from '../data/synthetic';
+import OrganViewer from '../components/bodymap/OrganViewer';
+import OrganMetrics from '../components/bodymap/OrganMetrics';
 
 interface OrganDetail {
   id: string;
   name: string;
   age: number;
+  ageRange: { low: number; high: number };
   pace: number;
   trend: 'improving' | 'stable' | 'worsening';
-  topFactor: string;
+  factors: string[];
   dataSource: string;
   color: string;
+  organPath: string;
 }
 
 const ORGAN_DETAILS: OrganDetail[] = [
@@ -20,217 +21,172 @@ const ORGAN_DETAILS: OrganDetail[] = [
     id: 'neurological',
     name: 'Neurological',
     age: 56.4,
-    pace: 1.14,
+    ageRange: { low: 54.9, high: 57.9 },
+    pace: 1.10,
     trend: 'worsening',
-    topFactor: 'Deep sleep declining — avg 1.4h (target 1.8h+)',
+    factors: [
+      'Deep sleep averaging 1.4h — target 1.8h+ for neurological repair',
+      'Bedtime variance of ±1.8h disrupting sleep architecture and REM',
+      'Elevated overnight cortisol suppressing restorative sleep stages',
+    ],
     dataSource: 'Brain · Wearable (sleep architecture: deep sleep, REM)',
     color: '#4ae616',
+    organPath: '/models/brain.glb',
   },
   {
     id: 'cardiovascular',
     name: 'Cardiovascular',
     age: 55.8,
-    pace: 1.08,
+    ageRange: { low: 54.3, high: 57.3 },
+    pace: 1.09,
     trend: 'stable',
-    topFactor: 'Resting HRV declining 3% week-over-week',
+    factors: [
+      'Resting HRV declining 3% week-over-week — now at 42ms',
+      'Zone 2 cardio absent — fewer than 60 active minutes this week',
+      'Sleep disruptions compressing overnight cardiovascular recovery',
+    ],
     dataSource: 'Heart · Wearable (HRV, resting HR)',
     color: '#4ae616',
+    organPath: '/models/heart.glb',
   },
   {
     id: 'metabolic',
     name: 'Metabolic',
     age: 60.1,
-    pace: 1.28,
+    ageRange: { low: 58.4, high: 61.8 },
+    pace: 1.18,
     trend: 'worsening',
-    topFactor: 'Post-meal glucose spikes (avg +47 mg/dL)',
+    factors: [
+      'Post-meal glucose spikes averaging +47mg/dL above fasting baseline',
+      'Late dinners (past 9pm) on 3 nights — elevating overnight fasting glucose',
+      'No post-meal walks Tuesday or Wednesday — peak glucose spike days',
+    ],
     dataSource: 'Pancreas · CGM (glucose variability, postprandial response)',
     color: '#f5700b',
+    organPath: '/models/pancreas.glb',
   },
   {
     id: 'endocrine',
     name: 'Endocrine',
     age: 57.0,
-    pace: 1.10,
+    ageRange: { low: 55.5, high: 58.5 },
+    pace: 1.12,
     trend: 'stable',
-    topFactor: 'Circadian temperature rhythm irregular — late light exposure',
+    factors: [
+      'Meal timing variance of 2.4h disrupting cortisol and insulin rhythm',
+      'Overnight fasting window averaging 10.2h — target 12h for hormonal reset',
+      'Weekday morning HRV dips indicate sustained cortisol load',
+    ],
     dataSource: 'Thyroid · Wearable (temperature trends, HRV circadian) + CGM',
     color: '#eaea08',
+    organPath: '/models/thyroid.glb',
   },
   {
     id: 'immune',
     name: 'Immune',
     age: 58.3,
-    pace: 1.18,
+    ageRange: { low: 56.8, high: 59.8 },
+    pace: 1.14,
     trend: 'improving',
-    topFactor: 'Inflammatory load elevated by late dinners',
+    factors: [
+      'Late-night eating compressing the overnight inflammatory repair window',
+      'Post-meal glucose excursions driving low-grade glycation stress',
+      'Improved sleep consistency this week reducing inflammatory marker load',
+    ],
     dataSource: 'Spleen · Epigenetic (immunosenescence, inflammatory markers)',
     color: '#eaea08',
+    organPath: '/models/spleen.glb',
   },
 ];
 
-const TREND_DISPLAY = {
-  improving: { label: '↓ Improving', color: '#14B8A6' },
-  stable: { label: '→ Stable', color: '#A8A29E' },
-  worsening: { label: '↑ Worsening', color: '#F59E0B' },
-};
+const ORGAN_DETAILS_FOR_VIZ = ORGAN_DETAILS.map(({ organPath, ...rest }) => rest);
+
+// Persists across navigation, resets on browser refresh
+let _persistedOrganId: string | null = null;
 
 interface BodyMapScreenProps {
-  onNavigateToScoreboard: () => void;
+  onNavigateToProjections: () => void;
 }
 
-export default function BodyMapScreen({ onNavigateToScoreboard }: BodyMapScreenProps) {
-  const [selectedOrgan, setSelectedOrgan] = useState<OrganDetail | null>(null);
+export default function BodyMapScreen({ onNavigateToProjections }: BodyMapScreenProps) {
+  const [selectedOrgan, setSelectedOrgan] = useState<OrganDetail | null>(
+    () => _persistedOrganId ? (ORGAN_DETAILS.find(o => o.id === _persistedOrganId) ?? null) : null
+  );
+
+  const handleZoneClick = useCallback((zoneId: string) => {
+    setSelectedOrgan(prev => {
+      const next = prev?.id === zoneId ? null : (ORGAN_DETAILS.find(o => o.id === zoneId) ?? null);
+      _persistedOrganId = next?.id ?? null;
+      return next;
+    });
+  }, []);
+
+  const handleClose = useCallback(() => {
+    _persistedOrganId = null;
+    setSelectedOrgan(null);
+  }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, height: '100%' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
 
-      {/* Persistent verdict banner */}
+      {/* Page title — top left overlay */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 12,
-        padding: '10px 16px', borderRadius: 8,
-        background: 'rgba(255, 255, 255, 0.06)',
-        border: '1px solid #B45309',
+        position: 'absolute', top: 40, left: 168, zIndex: 20,
+        pointerEvents: 'none',
       }}>
-        <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>Current pace</span>
-        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 14, color: '#F59E0B', fontWeight: 600 }}>
-          {USER.dunedinPace.toFixed(2)}×
-        </span>
-        <span style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>·</span>
-        <span style={{ fontSize: 12, color: 'var(--color-text-secondary)' }}>Aging faster than calendar age</span>
-      </div>
-
-      {/* Page header */}
-      <div>
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
+        <h1 style={{
+          margin: 0, fontSize: 22, fontWeight: 700,
+          color: 'var(--color-text-primary)', letterSpacing: '-0.02em',
+        }}>
           Body Map
         </h1>
-        <p style={{ margin: '4px 0 0', color: 'var(--color-text-tertiary)', fontSize: 14 }}>
-          Which parts of you are aging fastest — and what's driving it?
-        </p>
       </div>
 
-      <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flex: 1, minHeight: 0 }}>
+      {/* Full-page 3D body */}
+      <BodyMapViz
+        fullPage
+        organDetails={ORGAN_DETAILS_FOR_VIZ}
+        onZoneClick={handleZoneClick}
+        onEmptyClick={handleClose}
+      />
 
-        {/* Left — 3D point-cloud body */}
-        <Card style={{ flex: '1 1 55%', padding: 0, overflow: 'hidden', minHeight: 520, position: 'relative' }}>
-          <div style={{
-            position: 'absolute', top: 16, left: 20, zIndex: 5,
-            fontSize: 10, color: 'rgba(0,200,210,0.4)',
-            fontFamily: 'JetBrains Mono, monospace',
-            letterSpacing: '1px', textTransform: 'uppercase',
-          }}>
-            Drag to rotate · Hover body to explore
-          </div>
-          <BodyMapViz
-            onZoneClick={(zoneId) => {
-              const organ = ORGAN_DETAILS.find(o => o.id === zoneId) ?? null;
-              setSelectedOrgan(organ);
-            }}
-          />
-        </Card>
+      {/* Permanent right panel — always visible */}
+      <div className="bodymap-organ-panel" onClick={e => e.stopPropagation()}>
 
-        {/* Right — detail panel + organ list */}
-        <div style={{ flex: '0 0 340px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-
-          {/* Organ detail card */}
+        {/* Top screen card — 3D organ model */}
+        <div className="bodymap-screen-card">
           {selectedOrgan ? (
-            <Card style={{ padding: '20px 22px', border: `1px solid ${selectedOrgan.color}25` }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
-                <div>
-                  <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>
-                    {selectedOrgan.name} System
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 36, fontWeight: 700, color: selectedOrgan.color, lineHeight: 1 }}>
-                      ~{selectedOrgan.age}
-                    </span>
-                    <span style={{ fontSize: 14, color: 'var(--color-text-tertiary)' }}>years</span>
-                  </div>
-                  <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 4 }}>
-                    Calendar age: {USER.chronologicalAge} · Difference: +{(selectedOrgan.age - USER.chronologicalAge).toFixed(1)} yr
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginBottom: 4 }}>30-day trend</div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: TREND_DISPLAY[selectedOrgan.trend].color }}>
-                    {TREND_DISPLAY[selectedOrgan.trend].label}
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ height: 1, background: 'rgba(255,255,255,0.05)', marginBottom: 14 }} />
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div>
-                  <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginBottom: 4 }}>Top contributing factor</div>
-                  <div style={{ fontSize: 13, color: 'var(--color-text-primary)' }}>{selectedOrgan.topFactor}</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', marginBottom: 4 }}>Data source</div>
-                  <div style={{ fontSize: 12, color: 'var(--color-text-secondary)', fontStyle: 'italic' }}>
-                    {selectedOrgan.dataSource}
-                  </div>
-                </div>
-              </div>
-
-              <button
-                onClick={onNavigateToScoreboard}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6, marginTop: 16,
-                  padding: '9px 16px', borderRadius: 8,
-                  background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.25)',
-                  color: '#A78BFA', fontSize: 13, fontWeight: 500,
-                  cursor: 'pointer', fontFamily: 'inherit',
-                }}
-              >
-                See habits affecting {selectedOrgan.name.toLowerCase()} aging <ChevronRight size={14} />
-              </button>
-            </Card>
+            <OrganViewer
+              key={selectedOrgan.id}
+              organPath={selectedOrgan.organPath}
+              color={selectedOrgan.color}
+            />
           ) : (
-            <Card style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 160 }}>
-              <p style={{ color: 'var(--color-text-tertiary)', fontSize: 14, margin: 0, textAlign: 'center' }}>
-                Hover over a region on the body, then click to see detailed aging data.
-              </p>
-            </Card>
+            <div className="bodymap-empty-screen">
+              <span className="bodymap-empty-label">Nothing to Show</span>
+            </div>
           )}
-
-          {/* Organ comparison table */}
-          <Card style={{ padding: '16px 20px' }}>
-            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 14 }}>
-              All Systems Overview
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-              {/* Header */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 70px 60px 90px', gap: 8, padding: '0 4px 10px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                {['System', 'Bio Age', 'Pace', 'Trend'].map(h => (
-                  <span key={h} style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 600 }}>{h}</span>
-                ))}
-              </div>
-              {ORGAN_DETAILS.map((organ, i) => (
-                <div
-                  key={organ.id}
-                  onClick={() => setSelectedOrgan(organ)}
-                  style={{
-                    display: 'grid', gridTemplateColumns: '1fr 70px 60px 90px', gap: 8,
-                    padding: '10px 4px',
-                    borderBottom: i < ORGAN_DETAILS.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
-                    cursor: 'pointer',
-                    borderRadius: 6,
-                    background: selectedOrgan?.id === organ.id ? 'rgba(255,255,255,0.03)' : 'transparent',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: organ.color, flexShrink: 0, boxShadow: `0 0 6px ${organ.color}` }} />
-                    <span style={{ fontSize: 13, color: 'var(--color-text-primary)' }}>{organ.name}</span>
-                  </div>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: organ.color }}>~{organ.age}</span>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: organ.color }}>{organ.pace.toFixed(2)}×</span>
-                  <span style={{ fontSize: 12, color: TREND_DISPLAY[organ.trend].color }}>{TREND_DISPLAY[organ.trend].label}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
         </div>
+
+        {/* Bottom screen card — organ data */}
+        <div className="bodymap-screen-card scrollable">
+          {selectedOrgan ? (
+            <div style={{ padding: '22px 24px' }}>
+              <OrganMetrics
+                organ={selectedOrgan}
+                onClose={handleClose}
+                onNavigateToProjections={onNavigateToProjections}
+              />
+            </div>
+          ) : (
+            <div className="bodymap-empty-screen">
+              <span className="bodymap-empty-hint">
+                Hover over a region on the body, then click to see detailed aging data.
+              </span>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );

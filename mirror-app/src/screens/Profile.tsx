@@ -15,34 +15,6 @@ function StatusDot({ connected }: { connected: boolean }) {
   );
 }
 
-function DataFlowViz() {
-  return (
-    <div style={{ padding: '20px 0 4px' }}>
-      <svg width="100%" height={120} viewBox="0 0 520 120">
-        {/* Input labels */}
-        {[
-          { label: 'Wearable', y: 25, color: '#14B8A6' },
-          { label: 'CGM', y: 60, color: '#14B8A6' },
-          { label: 'Epigenetic', y: 95, color: '#8B5CF6' },
-        ].map(({ label, y, color }) => (
-          <g key={label}>
-            <text x={0} y={y + 4} fill="#475569" fontSize={11}>{label}</text>
-            <line x1={80} y1={y} x2={220} y2={60} stroke="#2A2D40" strokeWidth={1} />
-            <circle cx={80 + Math.random() * 140} cy={y + (60 - y) * 0.5} r={3} fill={color} opacity={0.8} />
-          </g>
-        ))}
-        {/* Central node */}
-        <circle cx={240} cy={60} r={28} fill="#1A1B25" stroke="#8B5CF6" strokeWidth={1.5} />
-        <text x={240} y={56} fill="#6B7280" fontSize={8} textAnchor="middle">Mirror</text>
-        <text x={240} y={68} fill="#6B7280" fontSize={8} textAnchor="middle">Engine</text>
-        {/* Output */}
-        <line x1={268} y1={60} x2={400} y2={60} stroke="#2A2D40" strokeWidth={1} />
-        <text x={404} y={56} fill="#475569" fontSize={10}>Aging</text>
-        <text x={404} y={70} fill="#475569" fontSize={10}>Trajectory</text>
-      </svg>
-    </div>
-  );
-}
 
 export default function Profile() {
   const [tab, setTab] = useState<TabId>('overview');
@@ -58,21 +30,16 @@ export default function Profile() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
       {/* Page header */}
-      <div>
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
-          Profile
-        </h1>
-        <p style={{ margin: '4px 0 0', color: 'var(--color-text-tertiary)', fontSize: 14 }}>
-          Your data sources, baseline, and system transparency.
-        </p>
-      </div>
+      <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: 'var(--color-text-primary)', letterSpacing: '-0.02em' }}>
+        Profile
+      </h1>
 
       {/* Identity card */}
       <Card style={{ padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
           <div style={{
             width: 56, height: 56, borderRadius: '50%',
-            background: 'linear-gradient(135deg, #8B5CF6, #14B8A6)',
+            background: 'linear-gradient(135deg, #14B8A6, #14B8A6)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 22, fontWeight: 700, color: '#fff', flexShrink: 0,
           }}>
@@ -127,8 +94,8 @@ export default function Profile() {
             <div style={{ padding: '10px 14px', background: 'rgba(20,184,166,0.06)', borderRadius: 8, fontSize: 13, color: 'var(--color-text-secondary)' }}>
               We projected 57.6. Your result: 57.2. The model is calibrated to you.
             </div>
-            <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(139,92,246,0.06)', borderRadius: 8, border: '1px solid rgba(139,92,246,0.15)' }}>
-              <div style={{ fontSize: 12, color: '#A78BFA', fontWeight: 600, marginBottom: 4 }}>Next test: April 2026 (47 days)</div>
+            <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(20,184,166,0.06)', borderRadius: 8, border: '1px solid rgba(20,184,166,0.15)' }}>
+              <div style={{ fontSize: 12, color: '#5EEAD4', fontWeight: 600, marginBottom: 4 }}>Next test: April 2026 (47 days)</div>
               <div style={{ fontSize: 12, color: 'var(--color-text-tertiary)' }}>
                 Your next result will show how this period's habits moved the needle. We're on record.
               </div>
@@ -174,7 +141,7 @@ export default function Profile() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {[
             {
-              id: 'wearable', title: 'Oura Ring Gen 3', icon: '📡',
+              id: 'wearable', title: 'Oura Ring Gen 3',
               connected: true, summary: `HRV: ${DATA_SOURCES.wearable.hrv}ms · Sleep: ${DATA_SOURCES.wearable.sleepEfficiency}% · Last sync: 2h ago`,
               details: [
                 { label: 'HRV Average', value: `${DATA_SOURCES.wearable.hrv}ms` },
@@ -184,7 +151,7 @@ export default function Profile() {
               pulling: 'HRV, sleep stages, resting HR, activity rings',
             },
             {
-              id: 'cgm', title: 'Dexcom G7', icon: '📈',
+              id: 'cgm', title: 'Dexcom G7',
               connected: true, summary: `${DATA_SOURCES.cgm.currentGlucose} mg/dL · Variability: ${DATA_SOURCES.cgm.variabilityScore} · Live`,
               details: [
                 { label: 'Current Glucose', value: `${DATA_SOURCES.cgm.currentGlucose} mg/dL` },
@@ -193,7 +160,7 @@ export default function Profile() {
               pulling: 'Real-time glucose, daily variability, meal response curves',
             },
             {
-              id: 'epigenetic', title: 'TruDiagnostic Report', icon: '🧬',
+              id: 'epigenetic', title: 'TruDiagnostic Report',
               connected: true, summary: `Bio age: ${DATA_SOURCES.epigenetic.biologicalAge} · ${DATA_SOURCES.epigenetic.daysAgo} days ago · Next: 47 days`,
               details: [
                 { label: 'Biological Age', value: String(DATA_SOURCES.epigenetic.biologicalAge) },
@@ -214,7 +181,6 @@ export default function Profile() {
                     cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left',
                   }}
                 >
-                  <span style={{ fontSize: 20 }}>{source.icon}</span>
                   <StatusDot connected={source.connected} />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 2 }}>{source.title}</div>
@@ -243,7 +209,7 @@ export default function Profile() {
                         <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>PDF or CSV · Drag & drop or click to browse</span>
                       </div>
                     )}
-                    <button style={{ padding: '8px 16px', borderRadius: 8, background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.25)', color: '#A78BFA', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 500 }}>
+                    <button style={{ padding: '8px 16px', borderRadius: 8, background: 'rgba(20,184,166,0.12)', border: '1px solid rgba(20,184,166,0.25)', color: '#5EEAD4', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 500 }}>
                       Disconnect
                     </button>
                   </div>
@@ -252,13 +218,6 @@ export default function Profile() {
             );
           })}
 
-          {/* Data flow viz */}
-          <Card style={{ padding: '16px 20px' }}>
-            <div style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
-              Data Flow
-            </div>
-            <DataFlowViz />
-          </Card>
         </div>
       )}
 
@@ -268,7 +227,7 @@ export default function Profile() {
 
           <Card style={{ padding: '20px 24px' }}>
             <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 16 }}>
-              <FlaskConical size={20} color="#8B5CF6" style={{ flexShrink: 0, marginTop: 2 }} />
+              <FlaskConical size={20} color="#14B8A6" style={{ flexShrink: 0, marginTop: 2 }} />
               <div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 6 }}>Clock Methodology</div>
                 <p style={{ margin: 0, fontSize: 13, color: 'var(--color-text-secondary)', lineHeight: 1.7 }}>
